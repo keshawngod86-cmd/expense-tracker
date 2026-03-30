@@ -2,11 +2,13 @@
   "ExpandedNodes": [
     "",
     "\\expense-tracker-backend",
+    "\\expense-tracker-backend\\.venv",
+    "\\expense-tracker-backend\\__pycache__",
     "\\expense-tracker-react",
     "\\expense-tracker-react\\public",
     "\\expense-tracker-react\\src",
     "\\expense-tracker-react\\src\\components"
   ],
-  "SelectedNode": "\\expense-tracker-react\\src\\App.jsx",
+  "SelectedNode": "\\expense-tracker-backend\\models.py",
   "PreviewInSolutionExplorer": false
 }

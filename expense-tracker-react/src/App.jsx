@@ -5,16 +5,22 @@ import ExpenseList from "./components/ExpenseList";
 import Summary from "./components/Summary";
 import Trend from "./components/Trend";
 
+const API_BASE_URL = "http://127.0.0.1:8000";
+
 function App() {
-    const [expenses, setExpenses] = useState(() => {
-        return JSON.parse(localStorage.getItem("expenses")) || [];
-    });
+    const [expenses, setExpenses] = useState([]);
 
     const [editingExpense, setEditingExpense] = useState(null);
 
-    useEffect(() => {
-        localStorage.setItem("expenses", JSON.stringify(expenses));
-    }, [expenses]);
+    async function fetchExpenses() {
+        try {
+            const response = await fetch(`${API_BASE_URL}/expenses`);
+            const data = await response.json();
+            setExpenses(data);
+        } catch (error) {
+            console.error("Failed to fetch expenses:", error);
+        }
+    }
 
     async function addExpense(expense) {
         console.log("addExpense called", expense);
