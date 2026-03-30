@@ -1,11 +1,12 @@
 {
   "ExpandedNodes": [
     "",
+    "\\expense-tracker-backend",
     "\\expense-tracker-react",
     "\\expense-tracker-react\\public",
     "\\expense-tracker-react\\src",
     "\\expense-tracker-react\\src\\components"
   ],
-  "SelectedNode": "\\expense-tracker-react\\src\\index.css",
+  "SelectedNode": "\\expense-tracker-react\\src\\App.jsx",
   "PreviewInSolutionExplorer": false
 }

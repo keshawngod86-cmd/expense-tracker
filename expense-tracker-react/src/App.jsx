@@ -16,13 +16,48 @@ function App() {
         localStorage.setItem("expenses", JSON.stringify(expenses));
     }, [expenses]);
 
-    function addExpense(expense) {
-        setExpenses([...expenses, expense]);
+    async function addExpense(expense) {
+        console.log("addExpense called", expense);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/expenses`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(expense),
+            });
+
+            console.log("POST response", response.status);
+
+            if (!response.ok) {
+                throw new Error("Failed to add expense");
+            }
+
+            await fetchExpenses();
+        } catch (error) {
+            console.error("addExpense error:", error);
+        }
     }
 
-    function deleteExpense(id) {
-        const updatedExpenses = expenses.filter((expense) => expense.id !== id);
-        setExpenses(updatedExpenses);
+    async function deleteExpense(id) {
+        console.log("deleteExpense called", id);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
+                method: "DELETE",
+            });
+
+            console.log("DELETE response", response.status);
+
+            if (!response.ok) {
+                throw new Error("Failed to delete expense");
+            }
+
+            await fetchExpenses();
+        } catch (error) {
+            console.error("deleteExpense error:", error);
+        }
     }
 
     function startEditExpense(id) {
