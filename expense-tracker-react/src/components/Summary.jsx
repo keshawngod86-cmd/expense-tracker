@@ -1,6 +1,15 @@
-function Summary({ expenses }) {
+﻿function Summary({ expenses }) {
     let total = 0;
     const categoryTotals = {};
+
+    const categoryIcons = {
+        Food: "🍔",
+        Transport: "🚗",
+        Shopping: "🛍️",
+        Bills: "💡",
+        Entertainment: "🎮",
+        Other: "📦",
+    };
 
     expenses.forEach((expense) => {
         total += expense.amount;
@@ -19,14 +28,19 @@ function Summary({ expenses }) {
                     <p>No data yet.</p>
                 ) : (
                     Object.keys(categoryTotals).map((category) => (
-                        <p key={category}>
-                            {category}: ${categoryTotals[category].toFixed(2)}
-                        </p>
+                        <div className="summary-row" key={category}>
+                            <span>
+                                {categoryIcons[category] || "📌"} {category}
+                            </span>
+                            <strong>${categoryTotals[category].toFixed(2)}</strong>
+                        </div>
                     ))
                 )}
             </div>
 
-            <h3>Total Spending: <span id="total-spending">${total.toFixed(2)}</span></h3>
+            <h3 className="total-spending-text">
+                Total Spending: <span id="total-spending">${total.toFixed(2)}</span>
+            </h3>
         </>
     );
 }

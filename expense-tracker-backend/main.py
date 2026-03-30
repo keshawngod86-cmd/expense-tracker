@@ -1,10 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from sqlmodel import Session, select
+
+from db import engine, create_db_and_tables
+from models import Expense
 
 app = FastAPI()
 
-# Allow React frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -13,15 +15,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-class Expense(BaseModel):
-    id: str
-    title: str
-    category: str
-    amount: float
-    date: str
-    description: str = ""
-
-expenses = []
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
 @app.get("/")
 def read_root():
@@ -29,29 +25,46 @@ def read_root():
 
 @app.get("/expenses")
 def get_expenses():
-    return expenses
+    with Session(engine) as session:
+        statement = select(Expense)
+        expenses = session.exec(statement).all()
+        return expenses
 
 @app.post("/expenses")
 def create_expense(expense: Expense):
-    expenses.append(expense)
-    return expense
+    with Session(engine) as session:
+        session.add(expense)
+        session.commit()
+        session.refresh(expense)
+        return expense
 
 @app.delete("/expenses/{expense_id}")
 def delete_expense(expense_id: str):
-    global expenses
-    original_length = len(expenses)
-    expenses = [expense for expense in expenses if expense.id != expense_id]
+    with Session(engine) as session:
+        expense = session.get(Expense, expense_id)
 
-    if len(expenses) == original_length:
-        raise HTTPException(status_code=404, detail="Expense not found")
+        if not expense:
+            raise HTTPException(status_code=404, detail="Expense not found")
 
-    return {"message": "Expense deleted successfully"}
+        session.delete(expense)
+        session.commit()
+        return {"message": "Expense deleted successfully"}
 
 @app.put("/expenses/{expense_id}")
 def update_expense(expense_id: str, updated_expense: Expense):
-    for index, expense in enumerate(expenses):
-        if expense.id == expense_id:
-            expenses[index] = updated_expense
-            return updated_expense
+    with Session(engine) as session:
+        expense = session.get(Expense, expense_id)
 
-    raise HTTPException(status_code=404, detail="Expense not found")
+        if not expense:
+            raise HTTPException(status_code=404, detail="Expense not found")
+
+        expense.title = updated_expense.title
+        expense.category = updated_expense.category
+        expense.amount = updated_expense.amount
+        expense.date = updated_expense.date
+        expense.description = updated_expense.description
+
+        session.add(expense)
+        session.commit()
+        session.refresh(expense)
+        return expense

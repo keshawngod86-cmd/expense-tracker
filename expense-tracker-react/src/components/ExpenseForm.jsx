@@ -1,6 +1,11 @@
 import { useEffect, useState } from "react";
 
-function ExpenseForm({ onAddExpense, editingExpense, onFinishEdit }) {
+function ExpenseForm({
+    onAddExpense,
+    onUpdateExpense,
+    editingExpense,
+    onFinishEdit,
+}) {
     const [formData, setFormData] = useState({
         title: "",
         category: "",
@@ -8,6 +13,8 @@ function ExpenseForm({ onAddExpense, editingExpense, onFinishEdit }) {
         date: "",
         description: "",
     });
+
+    const [editingId, setEditingId] = useState(null);
 
     useEffect(() => {
         if (editingExpense) {
@@ -18,6 +25,16 @@ function ExpenseForm({ onAddExpense, editingExpense, onFinishEdit }) {
                 date: editingExpense.date,
                 description: editingExpense.description,
             });
+            setEditingId(editingExpense.id);
+        } else {
+            setFormData({
+                title: "",
+                category: "",
+                amount: "",
+                date: "",
+                description: "",
+            });
+            setEditingId(null);
         }
     }, [editingExpense]);
 
@@ -29,7 +46,7 @@ function ExpenseForm({ onAddExpense, editingExpense, onFinishEdit }) {
         });
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault();
 
         if (
@@ -42,8 +59,8 @@ function ExpenseForm({ onAddExpense, editingExpense, onFinishEdit }) {
             return;
         }
 
-        const newExpense = {
-            id: Date.now().toString(),
+        const expenseData = {
+            id: editingId ? editingId : Date.now().toString(),
             title: formData.title,
             category: formData.category,
             amount: parseFloat(formData.amount),
@@ -51,17 +68,25 @@ function ExpenseForm({ onAddExpense, editingExpense, onFinishEdit }) {
             description: formData.description,
         };
 
-        onAddExpense(newExpense);
+        try {
+            if (editingId) {
+                await onUpdateExpense(expenseData);
+            } else {
+                await onAddExpense(expenseData);
+            }
 
-        setFormData({
-            title: "",
-            category: "",
-            amount: "",
-            date: "",
-            description: "",
-        });
-
-        onFinishEdit();
+            setFormData({
+                title: "",
+                category: "",
+                amount: "",
+                date: "",
+                description: "",
+            });
+            setEditingId(null);
+            onFinishEdit();
+        } catch (error) {
+            console.error("Submit failed:", error);
+        }
     }
 
     return (
@@ -136,7 +161,7 @@ function ExpenseForm({ onAddExpense, editingExpense, onFinishEdit }) {
             </div>
 
             <button type="submit" className="primary-btn">
-                {editingExpense ? "Update Expense" : "Add Expense"}
+                {editingId ? "Update Expense" : "Add Expense"}
             </button>
         </form>
     );

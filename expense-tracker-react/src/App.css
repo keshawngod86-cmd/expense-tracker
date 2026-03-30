@@ -5,30 +5,36 @@
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #f4f7fb;
+    background: #f4f7fb;
     color: #222;
 }
 
 .site-header {
-    background: linear-gradient(135deg, #2d6cdf, #5d8df5);
+    background: linear-gradient(135deg, #1d4ed8, #60a5fa);
     color: white;
     text-align: center;
-    padding: 40px 20px;
+    padding: 48px 20px;
 }
 
-    .site-header h1 {
-        margin: 0 0 10px;
-        font-size: 2.2rem;
-    }
+.header-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
 
-    .site-header p {
-        margin: 0;
-        font-size: 1rem;
-    }
+.site-header h1 {
+    margin: 0 0 10px;
+    font-size: 2.5rem;
+}
+
+.site-header p {
+    margin: 0;
+    font-size: 1.05rem;
+    opacity: 0.95;
+}
 
 .container {
-    width: 90%;
-    max-width: 1000px;
+    width: 92%;
+    max-width: 1100px;
     margin: 30px auto;
     display: grid;
     gap: 20px;
@@ -36,16 +42,20 @@ body {
 
 .card {
     background-color: white;
-    border-radius: 14px;
+    border-radius: 18px;
     padding: 24px;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
 }
 
-    .card h2 {
-        margin-top: 0;
-        margin-bottom: 20px;
-        color: #2d6cdf;
-    }
+.card-highlight {
+    border: 2px solid #dbeafe;
+}
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #1d4ed8;
+}
 
 .form-group {
     display: flex;
@@ -53,7 +63,8 @@ body {
     margin-bottom: 16px;
 }
 
-.form-row {
+.form-row,
+.filter-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
@@ -70,7 +81,7 @@ textarea,
 button {
     font-size: 1rem;
     padding: 12px;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
 input,
@@ -85,7 +96,7 @@ textarea {
 }
 
 .primary-btn {
-    background-color: #2d6cdf;
+    background-color: #2563eb;
     color: white;
     border: none;
     cursor: pointer;
@@ -93,7 +104,19 @@ textarea {
 }
 
     .primary-btn:hover {
-        background-color: #1f56b8;
+        background-color: #1d4ed8;
+    }
+
+.secondary-btn {
+    background-color: #eef2ff;
+    color: #1d4ed8;
+    border: none;
+    cursor: pointer;
+    margin-top: 8px;
+}
+
+    .secondary-btn:hover {
+        background-color: #dbeafe;
     }
 
 .expense-list {
@@ -105,9 +128,13 @@ textarea {
 .expense-item {
     padding: 14px;
     border: 1px solid #dbe3ee;
-    border-radius: 10px;
+    border-radius: 14px;
     margin-bottom: 12px;
     background-color: #fafcff;
+}
+
+.modern-item {
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
 }
 
 .placeholder-item {
@@ -115,22 +142,104 @@ textarea {
     text-align: center;
 }
 
-.summary-box,
-.trend-box {
+.expense-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+    .expense-top h3 {
+        margin: 0 0 8px;
+    }
+
+.expense-amount {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #1d4ed8;
+    white-space: nowrap;
+}
+
+.expense-meta p {
+    margin: 6px 0;
+    color: #444;
+}
+
+.action-row {
+    margin-top: 14px;
+}
+
+.category-tag {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.tag-food {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.tag-transport {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.tag-shopping {
+    background: #fce7f3;
+    color: #be185d;
+}
+
+.tag-bills {
+    background: #fef3c7;
+    color: #b45309;
+}
+
+.tag-entertainment {
+    background: #e9d5ff;
+    color: #7e22ce;
+}
+
+.tag-other {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.summary-box {
     background-color: #f8fbff;
     border: 1px solid #dbe7f7;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 14px;
 }
 
-    .summary-box p,
-    .trend-box p {
-        margin: 8px 0;
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #edf2f7;
+}
+
+    .summary-row:last-child {
+        border-bottom: none;
     }
+
+.total-spending-text {
+    margin-top: 18px;
+}
 
 #total-spending {
     color: #d64545;
     font-weight: bold;
+}
+
+.chart-wrapper {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 10px;
 }
 
 .edit-btn {
@@ -141,7 +250,7 @@ textarea {
     margin-top: 10px;
     margin-right: 10px;
     padding: 10px 14px;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
     .edit-btn:hover {
@@ -155,7 +264,7 @@ textarea {
     cursor: pointer;
     margin-top: 10px;
     padding: 10px 14px;
-    border-radius: 8px;
+    border-radius: 10px;
 }
 
     .delete-btn:hover {
@@ -164,21 +273,222 @@ textarea {
 
 .site-footer {
     text-align: center;
-    padding: 20px;
+    padding: 24px;
     color: #666;
     font-size: 0.95rem;
 }
 
-@media (max-width: 700px) {
-    .form-row {
+@media (max-width: 768px) {
+    .form-row,
+    .filter-grid,
+    .expense-top {
         grid-template-columns: 1fr;
+        display: grid;
+    }
+
+    .expense-top {
+        display: block;
+    }
+
+    .expense-amount {
+        margin-top: 10px;
     }
 
     .site-header h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
     }
 
     .card {
         padding: 18px;
     }
+}
+.trend-chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.trend-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.trend-helper-text {
+    margin: 0;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.large-chart {
+    height: 420px;
+}
+.trend-chart-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.trend-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.trend-helper-text {
+    margin: 0;
+    color: #4b5563;
+    font-size: 0.95rem;
+}
+
+.large-chart {
+    height: 420px;
+}
+
+.trend-category-panel {
+    background: #f8fbff;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+    .trend-category-panel h3 {
+        margin-top: 0;
+        margin-bottom: 14px;
+        color: #1d4ed8;
+    }
+
+.trend-category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.trend-category-card {
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid transparent;
+}
+
+.trend-category-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.trend-category-icon {
+    font-size: 1.2rem;
+}
+
+.trend-category-name {
+    font-weight: bold;
+}
+
+.trend-category-amount {
+    font-size: 1.05rem;
+}
+
+.trend-tag-food {
+    background: #fee2e2;
+    color: #b91c1c;
+    border-color: #fecaca;
+}
+
+.trend-tag-transport {
+    background: #dbeafe;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.trend-tag-shopping {
+    background: #fce7f3;
+    color: #be185d;
+    border-color: #fbcfe8;
+}
+
+.trend-tag-bills {
+    background: #fef3c7;
+    color: #b45309;
+    border-color: #fde68a;
+}
+
+.trend-tag-entertainment {
+    background: #ede9fe;
+    color: #7e22ce;
+    border-color: #ddd6fe;
+}
+
+.trend-tag-other {
+    background: #e5e7eb;
+    color: #374151;
+    border-color: #d1d5db;
+}
+.daily-detail-panel {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    padding: 18px;
+}
+
+    .daily-detail-panel h3 {
+        margin-top: 0;
+        margin-bottom: 14px;
+        color: #1d4ed8;
+    }
+
+.daily-expense-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.daily-expense-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 14px;
+    background: linear-gradient(180deg, #ffffff, #f9fbff);
+}
+
+.daily-expense-left {
+    flex: 1;
+}
+
+.daily-expense-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.daily-expense-icon {
+    font-size: 1.1rem;
+}
+
+.daily-expense-desc {
+    margin: 10px 0 0;
+    color: #4b5563;
+}
+
+.daily-expense-right {
+    font-weight: bold;
+    color: #1d4ed8;
+    white-space: nowrap;
+    font-size: 1rem;
+}
+
+.mini-category-tag {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: bold;
 }
