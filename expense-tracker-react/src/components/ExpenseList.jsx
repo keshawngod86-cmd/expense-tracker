@@ -1,25 +1,36 @@
 import ExpenseItem from "./ExpenseItem";
 
 function ExpenseList({ expenses, onDeleteExpense, onEditExpense }) {
-    if (expenses.length === 0) {
+    const sortedExpenses = [...expenses].sort((a, b) => {
+        if (b.date !== a.date) {
+            return b.date.localeCompare(a.date);
+        }
+        return String(b.id).localeCompare(String(a.id));
+    });
+
+    if (sortedExpenses.length === 0) {
         return (
-            <ul className="expense-list">
-                <li className="expense-item placeholder-item">No expenses yet.</li>
-            </ul>
+            <div className="expense-list-wrapper">
+                <ul className="expense-list">
+                    <li className="expense-item placeholder-item">No expenses yet.</li>
+                </ul>
+            </div>
         );
     }
 
     return (
-        <ul className="expense-list">
-            {expenses.map((expense) => (
-                <ExpenseItem
-                    key={expense.id}
-                    expense={expense}
-                    onDeleteExpense={onDeleteExpense}
-                    onEditExpense={onEditExpense}
-                />
-            ))}
-        </ul>
+        <div className="expense-list-wrapper">
+            <ul className="expense-list">
+                {sortedExpenses.map((expense) => (
+                    <ExpenseItem
+                        key={expense.id}
+                        expense={expense}
+                        onDeleteExpense={onDeleteExpense}
+                        onEditExpense={onEditExpense}
+                    />
+                ))}
+            </ul>
+        </div>
     );
 }
 
