@@ -118,26 +118,52 @@ expense-tracker/
 
 ---
 
-## 7. Screenshots
+## 7. Project Screenshots and Development Evidence
 
-Add your images to `docs/images/` and replace the example file names below.
+This section can be used to show both the final interface and the development process.  
+You can place your images in `docs/images/` and replace the file names below with your own screenshots.
 
-### Main Interface
-![Main interface](docs/images/main-interface.png)
+### Figure 1. Final website interface overview
+This screenshot should show the complete expense tracker interface, including the input form, expense list, summary section, and trend area. It helps demonstrate that the project works as a single-page application with the main workflow visible on one screen.
 
-### Expense List and Summary
-![Expense list and summary](docs/images/expense-list-summary.png)
+![Website UI overview](docs/images/website_ui_overview.png)
 
-### Monthly Trend Chart
-![Monthly trend chart](docs/images/monthly-trend.png)
+### Figure 2. Expense list and category summary
+This screenshot can focus on how expense records are displayed after being added to the database. It should highlight the list layout, category organisation, and summary information so the reader can clearly see the read and filter functions.
 
-### FastAPI CRUD Documentation
-![FastAPI CRUD docs](docs/images/fastapi-crud-docs.png)
+![Expense list and summary](docs/images/expense_list_and_summary.png)
 
-### Component Structure or Code Evidence
-![Component structure](docs/images/component-structure.png)
+### Figure 3. Monthly trend chart
+This screenshot should show the trend visualisation area. It can be used to explain how the project supports spending analysis rather than only basic CRUD, which makes the application more practical for users.
 
-> You can also expand this section with captions such as development process, edit logic, delete feature, or early prototype screenshots.
+![Monthly trend chart](docs/images/monthly_trend_chart.png)
+
+### Figure 4. FastAPI CRUD endpoint documentation
+This screenshot should show the FastAPI auto-generated API documentation page. It provides evidence that the backend supports the main endpoints used in the project, such as `GET /expenses`, `POST /expenses`, `PUT /expenses/{expense_id}`, and `DELETE /expenses/{expense_id}`.
+
+![FastAPI CRUD docs](docs/images/fastapi_crud_docs.png)
+
+### Figure 5. React component structure
+This screenshot can show the frontend folder or component structure. It helps explain that the interface was broken into reusable parts such as `ExpenseForm`, `ExpenseList`, `ExpenseItem`, `Summary`, and `Trend`.
+
+![React component structure](docs/images/react_component_structure.png)
+
+### Figure 6. App state management logic
+This screenshot can show part of the React code used to manage expense data and interface updates. For example, the current state logic using `useState`, `useEffect`, and expense-handling functions is useful evidence of how the page updates dynamically without changing pages.
+
+![App state management](docs/images/app_state_management.png)
+
+### Figure 7. Edit or delete feature implementation
+This screenshot can show the code or UI state for edit and delete behaviour. It helps demonstrate that the project includes full CRUD functionality rather than only adding and reading data.
+
+![Edit or delete feature](docs/images/edit_delete_feature.png)
+
+### Figure 8. Early prototype or development version
+This screenshot can show an earlier version of the interface or development stage. Including one process screenshot is helpful because it shows how the project improved over time instead of appearing only as a final result.
+
+![Early prototype](docs/images/early_prototype.png)
+
+> Tip: if you do not have all eight screenshots yet, you can keep the structure and replace only the figures you currently have. This still makes the README look more complete and easier to read.
 
 ---
 
@@ -296,14 +322,6 @@ Supported environment variables include:
 
 ---
 
-## 15. GitHub Note
-
-This project does **not** upload `.venv` or `node_modules` to GitHub. That is normal.
-
-When cloning the project to a new computer, run `setup_project.bat` again to rebuild the local environment.
-
----
-
-## 16. Author
+## 15. Author
 
 Developed as an individual assignment for **Internet Programming**.
