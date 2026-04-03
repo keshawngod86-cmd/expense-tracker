@@ -126,18 +126,18 @@ You can place your images in `docs/images/` and replace the file names below wit
 ### Figure 1. Final website interface overview
 This screenshot should show the complete expense tracker interface, including the input form, expense list, summary section, and trend area. It helps demonstrate that the project works as a single-page application with the main workflow visible on one screen.
 
-![Website UI overview]<img width="280" height="620" alt="Screenshot 2026-04-04 010619" src="https://github.com/user-attachments/assets/28ede3f7-ad5f-4f2c-8eb1-5d5727f93c2a" />
+<img width="280" height="620" alt="Screenshot 2026-04-04 010619" src="https://github.com/user-attachments/assets/28ede3f7-ad5f-4f2c-8eb1-5d5727f93c2a" />
 
 ### Figure 2. Expense list and category summary
 This screenshot can focus on how expense records are displayed after being added to the database. It should highlight the list layout, category organisation, and summary information so the reader can clearly see the read and filter functions.
 
-![Expense list and summary]<img width="529" height="440" alt="expense_list_and_summary" src="https://github.com/user-attachments/assets/9673b63d-4126-42e3-9815-10602810b2a5" />
+<img width="529" height="440" alt="expense_list_and_summary" src="https://github.com/user-attachments/assets/9673b63d-4126-42e3-9815-10602810b2a5" />
 
 
 ### Figure 3. Monthly trend chart
 This screenshot should show the trend visualisation area. It can be used to explain how the project supports spending analysis rather than only basic CRUD, which makes the application more practical for users.
 
-![Monthly trend chart]<img width="508" height="427" alt="monthly_trend_chart" src="https://github.com/user-attachments/assets/21533f71-3f19-41b7-83eb-5e355a467951" />
+<img width="508" height="427" alt="monthly_trend_chart" src="https://github.com/user-attachments/assets/21533f71-3f19-41b7-83eb-5e355a467951" />
 
 
 ### Figure 4. FastAPI CRUD endpoint documentation
@@ -158,13 +158,13 @@ This screenshot can show part of the React code used to manage expense data and 
 ### Figure 7. Edit or delete feature implementation
 This screenshot can show the code or UI state for edit and delete behaviour. It helps demonstrate that the project includes full CRUD functionality rather than only adding and reading data.
 
-![Edit or delete feature]<img width="353" height="305" alt="edit_delete_feature" src="https://github.com/user-attachments/assets/59bfd2b3-2cee-4e7c-9d7a-067177ba2e6e" />
+<img width="353" height="305" alt="edit_delete_feature" src="https://github.com/user-attachments/assets/59bfd2b3-2cee-4e7c-9d7a-067177ba2e6e" />
 <img width="373" height="140" alt="delete_feature_ui" src="https://github.com/user-attachments/assets/3eb998db-503c-4e5d-ba3a-6ed9df764bbe" />
 
 ### Figure 8. Early prototype or development version
 This screenshot can show an earlier version of the interface or development stage. Including one process screenshot is helpful because it shows how the project improved over time instead of appearing only as a final result.
 
-![Early prototype]<img width="271" height="468" alt="website_ui_overview" src="https://github.com/user-attachments/assets/5248a5b7-4491-447c-a2e8-f1d4b42a93ad" />
+<img width="271" height="468" alt="website_ui_overview" src="https://github.com/user-attachments/assets/5248a5b7-4491-447c-a2e8-f1d4b42a93ad" />
 
 
 > Tip: if you do not have all eight screenshots yet, you can keep the structure and replace only the figures you currently have. This still makes the README look more complete and easier to read.
