@@ -1,0 +1,14 @@
+# Python virtual environment
+expense-tracker-backend/.venv/
+expense-tracker-backend/__pycache__/
+expense-tracker-backend/*.pyc
+
+# Frontend dependencies and build output
+expense-tracker-react/node_modules/
+expense-tracker-react/dist/
+
+# Editor/system files
+.vs/
+.vscode/
+.DS_Store
+Thumbs.db

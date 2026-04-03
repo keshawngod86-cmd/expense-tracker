@@ -5,7 +5,7 @@ import ExpenseList from "./components/ExpenseList";
 import Summary from "./components/Summary";
 import Trend from "./components/Trend";
 
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
 function App() {
     const [expenses, setExpenses] = useState([]);
