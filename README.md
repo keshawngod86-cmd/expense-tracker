@@ -156,7 +156,7 @@ This screenshot can show part of the React code used to manage expense data and 
 ### Figure 7. Edit or delete feature implementation
 This screenshot can show the code or UI state for edit and delete behaviour. It helps demonstrate that the project includes full CRUD functionality rather than only adding and reading data.
 
-![Edit or delete feature](docs/images/edit_delete_feature.png)
+![Edit or delete feature]<img width="353" height="305" alt="edit_delete_feature" src="https://github.com/user-attachments/assets/59bfd2b3-2cee-4e7c-9d7a-067177ba2e6e" />
 <img width="373" height="140" alt="delete_feature_ui" src="https://github.com/user-attachments/assets/3eb998db-503c-4e5d-ba3a-6ed9df764bbe" />
 
 ### Figure 8. Early prototype or development version
