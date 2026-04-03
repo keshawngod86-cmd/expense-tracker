@@ -126,7 +126,7 @@ You can place your images in `docs/images/` and replace the file names below wit
 ### Figure 1. Final website interface overview
 This screenshot should show the complete expense tracker interface, including the input form, expense list, summary section, and trend area. It helps demonstrate that the project works as a single-page application with the main workflow visible on one screen.
 
-![Website UI overview](docs/images/website_ui_overview.png)
+![Website UI overview]<img width="280" height="620" alt="Screenshot 2026-04-04 010619" src="https://github.com/user-attachments/assets/28ede3f7-ad5f-4f2c-8eb1-5d5727f93c2a" />
 
 ### Figure 2. Expense list and category summary
 This screenshot can focus on how expense records are displayed after being added to the database. It should highlight the list layout, category organisation, and summary information so the reader can clearly see the read and filter functions.
@@ -157,11 +157,13 @@ This screenshot can show part of the React code used to manage expense data and 
 This screenshot can show the code or UI state for edit and delete behaviour. It helps demonstrate that the project includes full CRUD functionality rather than only adding and reading data.
 
 ![Edit or delete feature](docs/images/edit_delete_feature.png)
+<img width="373" height="140" alt="delete_feature_ui" src="https://github.com/user-attachments/assets/3eb998db-503c-4e5d-ba3a-6ed9df764bbe" />
 
 ### Figure 8. Early prototype or development version
 This screenshot can show an earlier version of the interface or development stage. Including one process screenshot is helpful because it shows how the project improved over time instead of appearing only as a final result.
 
-![Early prototype](docs/images/early_prototype.png)
+![Early prototype]<img width="271" height="468" alt="website_ui_overview" src="https://github.com/user-attachments/assets/5248a5b7-4491-447c-a2e8-f1d4b42a93ad" />
+
 
 > Tip: if you do not have all eight screenshots yet, you can keep the structure and replace only the figures you currently have. This still makes the README look more complete and easier to read.
 
