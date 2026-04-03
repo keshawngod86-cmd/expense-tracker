@@ -131,12 +131,14 @@ This screenshot should show the complete expense tracker interface, including th
 ### Figure 2. Expense list and category summary
 This screenshot can focus on how expense records are displayed after being added to the database. It should highlight the list layout, category organisation, and summary information so the reader can clearly see the read and filter functions.
 
-![Expense list and summary](docs/images/expense_list_and_summary.png)
+![Expense list and summary]<img width="529" height="440" alt="expense_list_and_summary" src="https://github.com/user-attachments/assets/9673b63d-4126-42e3-9815-10602810b2a5" />
+
 
 ### Figure 3. Monthly trend chart
 This screenshot should show the trend visualisation area. It can be used to explain how the project supports spending analysis rather than only basic CRUD, which makes the application more practical for users.
 
-![Monthly trend chart](docs/images/monthly_trend_chart.png)
+![Monthly trend chart]<img width="508" height="427" alt="monthly_trend_chart" src="https://github.com/user-attachments/assets/21533f71-3f19-41b7-83eb-5e355a467951" />
+
 
 ### Figure 4. FastAPI CRUD endpoint documentation
 This screenshot should show the FastAPI auto-generated API documentation page. It provides evidence that the backend supports the main endpoints used in the project, such as `GET /expenses`, `POST /expenses`, `PUT /expenses/{expense_id}`, and `DELETE /expenses/{expense_id}`.
