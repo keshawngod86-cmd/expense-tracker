@@ -8,6 +8,5 @@ if not exist ".venv\Scripts\python.exe" (
     exit /b 1
 )
 
-call ".venv\Scripts\activate"
-python -m uvicorn main:app --reload
+.venv\Scripts\python.exe -m uvicorn main:app --reload
 pause

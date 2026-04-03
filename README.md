@@ -2,7 +2,7 @@
 
 A full-stack expense tracking project built with React, FastAPI, and MySQL.
 
-The UI has not been changed in this package. This version mainly fixes the project structure so it is easier to clone to a new computer and run again.
+The UI has not been changed in this package. This version mainly fixes the project structure and setup scripts so it is easier to clone to a new computer and run again.
 
 ## Tech stack
 
@@ -44,6 +44,8 @@ expense-tracker/
 - Added `setup_database.sql`
 - Cleaned editor cache and Git metadata out of the delivery package
 - Kept the existing UI unchanged
+- Forced setup to ignore broken local pip mirror settings
+- Added fallback package sources for both Python and npm
 
 ## First-time setup on a new computer
 
@@ -92,21 +94,35 @@ It should open two terminal windows:
 - backend: `http://127.0.0.1:8000`
 - frontend: `http://localhost:5173`
 
+## Network note
+
+This package now ignores any broken local pip mirror config and tries these Python sources in order:
+
+1. `https://pypi.org/simple`
+2. `https://mirrors.aliyun.com/pypi/simple/`
+3. `https://pypi.tuna.tsinghua.edu.cn/simple`
+
+It also tries these npm registries:
+
+1. `https://registry.npmjs.org/`
+2. `https://registry.npmmirror.com/`
+
+If setup still fails after all of those, the current network itself cannot reach the package registries.
+
 ## Manual commands
 
 ### Backend
 ```bat
 cd expense-tracker-backend
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python -m uvicorn main:app --reload
+.venv\Scripts\python.exe -m pip install -r requirements.txt --index-url https://pypi.org/simple
+.venv\Scripts\python.exe -m uvicorn main:app --reload
 ```
 
 ### Frontend
 ```bat
 cd expense-tracker-react
-npm install
+npm install --registry=https://registry.npmjs.org/
 npm run dev
 ```
 
