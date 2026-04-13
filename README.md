@@ -167,7 +167,6 @@ This screenshot can show an earlier version of the interface or development stag
 <img width="271" height="468" alt="website_ui_overview" src="https://github.com/user-attachments/assets/5248a5b7-4491-447c-a2e8-f1d4b42a93ad" />
 
 
-> Tip: if you do not have all eight screenshots yet, you can keep the structure and replace only the figures you currently have. This still makes the README look more complete and easier to read.
 
 ---
 
