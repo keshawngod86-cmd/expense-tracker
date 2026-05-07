@@ -2,18 +2,26 @@
     box-sizing: border-box;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f4f7fb;
+    font-family: var(--app-font, Arial, Helvetica, sans-serif);
+    background:
+        radial-gradient(circle at top left, rgba(96, 165, 250, 0.18), transparent 32rem),
+        #f4f7fb;
     color: #222;
 }
 
 .site-header {
-    background: linear-gradient(135deg, #1d4ed8, #60a5fa);
+    background:
+        linear-gradient(135deg, rgba(29, 78, 216, 0.96), rgba(37, 99, 235, 0.86)),
+        url("./assets/hero.png") center/cover;
     color: white;
     text-align: center;
-    padding: 42px 20px;
+    padding: clamp(30px, 6vw, 56px) 20px;
 }
 
 .header-content {
@@ -23,28 +31,55 @@ body {
 
 .site-header h1 {
     margin: 0 0 8px;
-    font-size: 2.3rem;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.05;
 }
 
 .site-header p {
     margin: 0;
-    font-size: 1rem;
+    font-size: clamp(0.95rem, 2vw, 1.12rem);
     opacity: 0.95;
 }
 
 .container {
-    width: 92%;
-    max-width: 1100px;
-    margin: 22px auto;
+    width: min(100% - 40px, 1180px);
+    margin: clamp(18px, 3vw, 34px) auto;
+}
+
+.dashboard-layout {
     display: grid;
-    gap: 16px;
+    grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.35fr);
+    align-items: start;
+    gap: clamp(14px, 2vw, 22px);
+}
+
+.form-card {
+    grid-column: 1;
+    grid-row: span 2;
+    position: sticky;
+    top: 18px;
+}
+
+.filter-card,
+.list-card {
+    grid-column: 2;
+}
+
+.summary-card {
+    grid-column: 1;
+}
+
+.trend-card {
+    grid-column: 1 / -1;
 }
 
 .card {
     background-color: white;
-    border-radius: 18px;
-    padding: 18px;
+    border: 1px solid rgba(219, 231, 247, 0.9);
+    border-radius: 16px;
+    padding: clamp(16px, 2vw, 22px);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+    min-width: 0;
 }
 
 .card-highlight {
@@ -55,19 +90,26 @@ body {
     margin-top: 0;
     margin-bottom: 16px;
     color: #1d4ed8;
-    font-size: 1.25rem;
+    font-size: clamp(1.12rem, 2.2vw, 1.35rem);
+    line-height: 1.2;
+}
+
+form {
+    display: grid;
+    gap: 14px;
 }
 
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 14px;
+    margin-bottom: 0;
+    min-width: 0;
 }
 
 .form-row,
 .filter-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
 }
 
@@ -83,17 +125,29 @@ button {
     font-size: 0.98rem;
     padding: 11px;
     border-radius: 10px;
+    font-family: inherit;
 }
 
 input,
 select,
 textarea {
+    width: 100%;
+    min-width: 0;
     border: 1px solid #cfd8e3;
     background-color: #fff;
 }
 
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+    outline: none;
+}
+
 textarea {
     resize: vertical;
+    min-height: 112px;
 }
 
 .primary-btn {
@@ -102,6 +156,7 @@ textarea {
     border: none;
     cursor: pointer;
     transition: 0.2s ease;
+    min-height: 44px;
 }
 
 .primary-btn:hover {
@@ -114,6 +169,7 @@ textarea {
     border: none;
     cursor: pointer;
     margin-top: 8px;
+    min-height: 44px;
 }
 
 .secondary-btn:hover {
@@ -150,6 +206,7 @@ textarea {
     border-radius: 14px;
     margin-bottom: 10px;
     background-color: #fafcff;
+    min-width: 0;
 }
 
 .modern-item {
@@ -169,9 +226,14 @@ textarea {
     margin-bottom: 10px;
 }
 
+.expense-top > div:first-child {
+    min-width: 0;
+}
+
 .expense-top h3 {
     margin: 0 0 6px;
     font-size: 1rem;
+    overflow-wrap: anywhere;
 }
 
 .expense-amount {
@@ -185,9 +247,13 @@ textarea {
     margin: 4px 0;
     color: #444;
     font-size: 0.94rem;
+    overflow-wrap: anywhere;
 }
 
 .action-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 10px;
 }
 
@@ -240,6 +306,7 @@ textarea {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 12px;
     padding: 9px 0;
     border-bottom: 1px solid #edf2f7;
 }
@@ -250,6 +317,8 @@ textarea {
 
 .total-spending-text {
     margin-top: 16px;
+    margin-bottom: 0;
+    font-size: 1.05rem;
 }
 
 #total-spending {
@@ -261,6 +330,12 @@ textarea {
     background-color: #ffffff;
     border-radius: 12px;
     padding: 8px;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.chart-wrapper canvas {
+    max-width: 100% !important;
 }
 
 .edit-btn {
@@ -268,11 +343,11 @@ textarea {
     color: white;
     border: none;
     cursor: pointer;
-    margin-top: 8px;
-    margin-right: 8px;
+    margin: 0;
     padding: 9px 12px;
     border-radius: 10px;
     font-size: 0.92rem;
+    min-height: 40px;
 }
 
 .edit-btn:hover {
@@ -284,10 +359,11 @@ textarea {
     color: white;
     border: none;
     cursor: pointer;
-    margin-top: 8px;
+    margin: 0;
     padding: 9px 12px;
     border-radius: 10px;
     font-size: 0.92rem;
+    min-height: 40px;
 }
 
 .delete-btn:hover {
@@ -296,7 +372,7 @@ textarea {
 
 .site-footer {
     text-align: center;
-    padding: 20px;
+    padding: 20px 16px 28px;
     color: #666;
     font-size: 0.92rem;
 }
@@ -323,7 +399,7 @@ textarea {
 }
 
 .large-chart {
-    height: 320px;
+    height: clamp(260px, 36vw, 360px);
 }
 
 .trend-category-panel {
@@ -456,6 +532,7 @@ textarea {
 
 .daily-expense-left {
     flex: 1;
+    min-width: 0;
 }
 
 .daily-expense-title-row {
@@ -463,6 +540,7 @@ textarea {
     align-items: center;
     gap: 8px;
     margin-bottom: 8px;
+    overflow-wrap: anywhere;
 }
 
 .daily-expense-icon {
@@ -473,6 +551,7 @@ textarea {
     margin: 8px 0 0;
     color: #4b5563;
     font-size: 0.92rem;
+    overflow-wrap: anywhere;
 }
 
 .daily-expense-right {
@@ -490,7 +569,51 @@ textarea {
     font-weight: bold;
 }
 
+@media (max-width: 1024px) {
+    .dashboard-layout {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .form-card {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        position: static;
+    }
+
+    .filter-card {
+        grid-column: 1 / -1;
+    }
+
+    .list-card {
+        grid-column: 1;
+    }
+
+    .summary-card {
+        grid-column: 2;
+    }
+
+    .trend-card {
+        grid-column: 1 / -1;
+    }
+}
+
 @media (max-width: 768px) {
+    .container {
+        width: min(100% - 28px, 680px);
+    }
+
+    .dashboard-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .form-card,
+    .filter-card,
+    .list-card,
+    .summary-card,
+    .trend-card {
+        grid-column: 1;
+    }
+
     .form-row,
     .filter-grid {
         grid-template-columns: 1fr;
@@ -504,12 +627,9 @@ textarea {
         margin-top: 8px;
     }
 
-    .site-header h1 {
-        font-size: 2rem;
-    }
-
     .card {
         padding: 16px;
+        border-radius: 14px;
     }
 
     .expense-list {
@@ -522,5 +642,58 @@ textarea {
 
     .daily-expense-card {
         flex-direction: column;
+    }
+}
+
+@media (max-width: 520px) {
+    .site-header {
+        padding: 28px 16px;
+    }
+
+    .container {
+        width: min(100% - 20px, 460px);
+        margin-top: 14px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .edit-btn,
+    .delete-btn {
+        width: 100%;
+    }
+
+    .action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .expense-top h3 {
+        font-size: 0.98rem;
+    }
+
+    .category-tag,
+    .mini-category-tag {
+        white-space: normal;
+    }
+
+    .summary-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .large-chart {
+        height: 250px;
+    }
+
+    .trend-header-row {
+        align-items: stretch;
+    }
+
+    .trend-category-grid {
+        grid-template-columns: 1fr;
     }
 }

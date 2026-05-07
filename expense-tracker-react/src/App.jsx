@@ -142,10 +142,11 @@ function App() {
                 </div>
             </header>
 
-            <main className="container">
-                <section className="card card-highlight">
+            <main className="container dashboard-layout">
+                <section className="card card-highlight form-card">
                     <h2>{editingExpense ? "Edit Expense" : "Add New Expense"}</h2>
                     <ExpenseForm
+                        key={editingExpense ? editingExpense.id : "new-expense"}
                         onAddExpense={addExpense}
                         onUpdateExpense={updateExpense}
                         editingExpense={editingExpense}
@@ -153,7 +154,7 @@ function App() {
                     />
                 </section>
 
-                <section className="card">
+                <section className="card filter-card">
                     <h2>Search & Filter</h2>
 
                     <div className="filter-grid">
@@ -220,7 +221,7 @@ function App() {
                     </button>
                 </section>
 
-                <section className="card">
+                <section className="card list-card">
                     <h2>Expense List</h2>
                     <ExpenseList
                         expenses={filteredExpenses}
@@ -229,12 +230,12 @@ function App() {
                     />
                 </section>
 
-                <section className="card">
+                <section className="card summary-card">
                     <h2>Category Summary</h2>
                     <Summary expenses={filteredExpenses} />
                 </section>
 
-                <section className="card">
+                <section className="card trend-card">
                     <h2>Monthly Trend</h2>
                     <Trend expenses={filteredExpenses} />
                 </section>

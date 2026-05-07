@@ -1,4 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+
+function getInitialFormData(editingExpense) {
+    if (editingExpense) {
+        return {
+            title: editingExpense.title,
+            category: editingExpense.category,
+            amount: editingExpense.amount,
+            date: editingExpense.date,
+            description: editingExpense.description,
+        };
+    }
+
+    return {
+        title: "",
+        category: "",
+        amount: "",
+        date: "",
+        description: "",
+    };
+}
 
 function ExpenseForm({
     onAddExpense,
@@ -6,37 +26,10 @@ function ExpenseForm({
     editingExpense,
     onFinishEdit,
 }) {
-    const [formData, setFormData] = useState({
-        title: "",
-        category: "",
-        amount: "",
-        date: "",
-        description: "",
-    });
-
-    const [editingId, setEditingId] = useState(null);
-
-    useEffect(() => {
-        if (editingExpense) {
-            setFormData({
-                title: editingExpense.title,
-                category: editingExpense.category,
-                amount: editingExpense.amount,
-                date: editingExpense.date,
-                description: editingExpense.description,
-            });
-            setEditingId(editingExpense.id);
-        } else {
-            setFormData({
-                title: "",
-                category: "",
-                amount: "",
-                date: "",
-                description: "",
-            });
-            setEditingId(null);
-        }
-    }, [editingExpense]);
+    const [formData, setFormData] = useState(() =>
+        getInitialFormData(editingExpense)
+    );
+    const editingId = editingExpense ? editingExpense.id : null;
 
     function handleChange(event) {
         const { name, value } = event.target;
@@ -82,7 +75,6 @@ function ExpenseForm({
                 date: "",
                 description: "",
             });
-            setEditingId(null);
             onFinishEdit();
         } catch (error) {
             console.error("Submit failed:", error);
