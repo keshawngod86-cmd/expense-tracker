@@ -1,29 +1,16 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
     BarElement,
-    LineElement,
-    PointElement,
     Title,
     Tooltip,
     Legend,
-    Filler,
 } from "chart.js";
-import { Bar, Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    BarElement,
-    LineElement,
-    PointElement,
-    Title,
-    Tooltip,
-    Legend,
-    Filler
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const categoryConfig = {
     Food: { icon: "🍔", bgClass: "trend-tag-food" },
@@ -34,155 +21,146 @@ const categoryConfig = {
     Other: { icon: "📦", bgClass: "trend-tag-other" },
 };
 
+const timeDimensionOptions = [
+    {
+        key: "daily",
+        label: "Daily Bills",
+        chartLabel: "Daily Spending",
+        chartTitle: "Daily Expense Overview",
+        xAxisTitle: "Date",
+        getPeriodKey: (expense) => expense.date,
+    },
+    {
+        key: "monthly",
+        label: "Monthly Bills",
+        chartLabel: "Monthly Spending",
+        chartTitle: "Monthly Expense Overview",
+        xAxisTitle: "Month",
+        getPeriodKey: (expense) => expense.date.slice(0, 7),
+    },
+    {
+        key: "yearly",
+        label: "Annual Bills",
+        chartLabel: "Annual Spending",
+        chartTitle: "Annual Expense Overview",
+        xAxisTitle: "Year",
+        getPeriodKey: (expense) => expense.date.slice(0, 4),
+    },
+];
+
 function getHeatColor(value, min, max) {
     if (max === min) {
         return {
-            background: "rgba(251, 191, 36, 0.65)",
-            border: "rgba(217, 119, 6, 1)",
+            background: "rgba(37, 99, 235, 0.72)",
+            border: "rgba(29, 78, 216, 1)",
         };
     }
 
     const ratio = (value - min) / (max - min);
 
-    if (ratio <= 0.2) {
+    if (ratio <= 0.25) {
         return {
-            background: "rgba(187, 247, 208, 0.85)",
-            border: "rgba(34, 197, 94, 1)",
-        };
-    }
-    if (ratio <= 0.4) {
-        return {
-            background: "rgba(134, 239, 172, 0.85)",
+            background: "rgba(34, 197, 94, 0.72)",
             border: "rgba(22, 163, 74, 1)",
         };
     }
-    if (ratio <= 0.6) {
+
+    if (ratio <= 0.5) {
         return {
-            background: "rgba(253, 224, 71, 0.85)",
-            border: "rgba(202, 138, 4, 1)",
+            background: "rgba(59, 130, 246, 0.72)",
+            border: "rgba(37, 99, 235, 1)",
         };
     }
-    if (ratio <= 0.8) {
+
+    if (ratio <= 0.75) {
         return {
-            background: "rgba(251, 146, 60, 0.85)",
-            border: "rgba(234, 88, 12, 1)",
+            background: "rgba(245, 158, 11, 0.74)",
+            border: "rgba(217, 119, 6, 1)",
         };
     }
 
     return {
-        background: "rgba(248, 113, 113, 0.9)",
+        background: "rgba(239, 68, 68, 0.78)",
         border: "rgba(220, 38, 38, 1)",
     };
 }
 
-function Trend({ expenses }) {
-    const [selectedMonth, setSelectedMonth] = useState(null);
-    const [selectedDay, setSelectedDay] = useState(null);
+function formatCurrency(value) {
+    return `$${Number(value).toFixed(2)}`;
+}
 
-    const monthlyTotals = useMemo(() => {
+function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
+    const [timeDimension, setTimeDimension] = useState("monthly");
+    const [selectedPeriod, setSelectedPeriod] = useState(null);
+
+    const activeOption =
+        timeDimensionOptions.find((option) => option.key === timeDimension) ||
+        timeDimensionOptions[1];
+
+    const periodTotals = useMemo(() => {
         const totals = {};
 
         expenses.forEach((expense) => {
-            const month = expense.date.slice(0, 7);
-            if (!totals[month]) totals[month] = 0;
-            totals[month] += expense.amount;
+            const periodKey = activeOption.getPeriodKey(expense);
+            if (!totals[periodKey]) totals[periodKey] = 0;
+            totals[periodKey] += expense.amount;
         });
 
         return totals;
-    }, [expenses]);
+    }, [expenses, activeOption]);
 
-    const selectedMonthExpenses = useMemo(() => {
-        if (!selectedMonth) return [];
-        return expenses.filter((expense) => expense.date.startsWith(selectedMonth));
-    }, [expenses, selectedMonth]);
+    const selectedPeriodExpenses = useMemo(() => {
+        if (!selectedPeriod) return [];
 
-    const dailyTotals = useMemo(() => {
+        return expenses
+            .filter((expense) => activeOption.getPeriodKey(expense) === selectedPeriod)
+            .sort((a, b) => b.amount - a.amount);
+    }, [expenses, activeOption, selectedPeriod]);
+
+    const categoryTotalsForSelectedPeriod = useMemo(() => {
         const totals = {};
 
-        selectedMonthExpenses.forEach((expense) => {
-            if (!totals[expense.date]) totals[expense.date] = 0;
-            totals[expense.date] += expense.amount;
-        });
-
-        return totals;
-    }, [selectedMonthExpenses]);
-
-    const categoryTotalsForSelectedMonth = useMemo(() => {
-        const totals = {};
-
-        selectedMonthExpenses.forEach((expense) => {
+        selectedPeriodExpenses.forEach((expense) => {
             if (!totals[expense.category]) totals[expense.category] = 0;
             totals[expense.category] += expense.amount;
         });
 
         return totals;
-    }, [selectedMonthExpenses]);
+    }, [selectedPeriodExpenses]);
 
-    const selectedDayExpenses = useMemo(() => {
-        if (!selectedDay) return [];
-        return selectedMonthExpenses
-            .filter((expense) => expense.date === selectedDay)
-            .sort((a, b) => b.amount - a.amount);
-    }, [selectedMonthExpenses, selectedDay]);
+    const periodLabels = Object.keys(periodTotals).sort();
+    const periodValues = periodLabels.map((period) => periodTotals[period]);
+    const periodMin = periodValues.length ? Math.min(...periodValues) : 0;
+    const periodMax = periodValues.length ? Math.max(...periodValues) : 0;
 
-    const monthlyLabels = Object.keys(monthlyTotals).sort();
-    const monthlyValues = monthlyLabels.map((month) => monthlyTotals[month]);
-
-    const dailyDates = Object.keys(dailyTotals).sort();
-    const dailyLabels = dailyDates.map((day) => day.slice(8, 10));
-    const dailyValues = dailyDates.map((day) => dailyTotals[day]);
-
-    if (monthlyLabels.length === 0) {
-        return (
-            <div className="trend-box">
-                <p>No data yet.</p>
-            </div>
-        );
-    }
-
-    const monthMin = Math.min(...monthlyValues);
-    const monthMax = Math.max(...monthlyValues);
-
-    const monthlyBackgroundColors = monthlyValues.map(
-        (value) => getHeatColor(value, monthMin, monthMax).background
+    const barColors = periodValues.map(
+        (value) => getHeatColor(value, periodMin, periodMax).background
     );
-    const monthlyBorderColors = monthlyValues.map(
-        (value) => getHeatColor(value, monthMin, monthMax).border
+    const barBorderColors = periodValues.map(
+        (value) => getHeatColor(value, periodMin, periodMax).border
     );
 
-    const dayMin = dailyValues.length ? Math.min(...dailyValues) : 0;
-    const dayMax = dailyValues.length ? Math.max(...dailyValues) : 0;
-
-    const dailyPointBackground = dailyValues.map(
-        (value) => getHeatColor(value, dayMin, dayMax).background
-    );
-    const dailyPointBorder = dailyValues.map(
-        (value) => getHeatColor(value, dayMin, dayMax).border
-    );
-
-    const monthlyBarData = {
-        labels: monthlyLabels,
+    const barData = {
+        labels: periodLabels,
         datasets: [
             {
-                label: "Monthly Spending",
-                data: monthlyValues,
+                label: activeOption.chartLabel,
+                data: periodValues,
                 borderWidth: 1.5,
                 borderRadius: 8,
-                backgroundColor: monthlyBackgroundColors,
-                borderColor: monthlyBorderColors,
+                backgroundColor: barColors,
+                borderColor: barBorderColors,
             },
         ],
     };
 
-    const monthlyBarOptions = {
+    const barOptions = {
         responsive: true,
         maintainAspectRatio: false,
         onClick: (event, elements) => {
             if (elements.length > 0) {
                 const index = elements[0].index;
-                const clickedMonth = monthlyLabels[index];
-                setSelectedMonth(clickedMonth);
-                setSelectedDay(null);
+                setSelectedPeriod(periodLabels[index]);
             }
         },
         plugins: {
@@ -191,73 +169,12 @@ function Trend({ expenses }) {
             },
             title: {
                 display: true,
-                text: "Monthly Expense Overview",
+                text: activeOption.chartTitle,
             },
             tooltip: {
                 callbacks: {
                     label: function (context) {
-                        return `$${Number(context.raw).toFixed(2)}`;
-                    },
-                },
-            },
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: {
-                    callback: function (value) {
-                        return `$${value}`;
-                    },
-                },
-            },
-        },
-    };
-
-    const dailyLineData = {
-        labels: dailyLabels,
-        datasets: [
-            {
-                label: `Daily Spending in ${selectedMonth}`,
-                data: dailyValues,
-                fill: true,
-                tension: 0.3,
-                pointRadius: 6,
-                pointHoverRadius: 8,
-                pointBackgroundColor: dailyPointBackground,
-                pointBorderColor: dailyPointBorder,
-                pointBorderWidth: 2,
-                borderColor: "rgba(59, 130, 246, 1)",
-                backgroundColor: "rgba(147, 197, 253, 0.25)",
-            },
-        ],
-    };
-
-    const dailyLineOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        onClick: (event, elements) => {
-            if (elements.length > 0) {
-                const index = elements[0].index;
-                const clickedDate = dailyDates[index];
-                setSelectedDay(clickedDate);
-            }
-        },
-        plugins: {
-            legend: {
-                display: true,
-            },
-            title: {
-                display: true,
-                text: `Daily Expense Overview - ${selectedMonth}`,
-            },
-            tooltip: {
-                callbacks: {
-                    title: function (tooltipItems) {
-                        const dayIndex = tooltipItems[0].dataIndex;
-                        return dailyDates[dayIndex];
-                    },
-                    label: function (context) {
-                        return `$${Number(context.raw).toFixed(2)}`;
+                        return formatCurrency(context.raw);
                     },
                 },
             },
@@ -274,124 +191,163 @@ function Trend({ expenses }) {
             x: {
                 title: {
                     display: true,
-                    text: "Day of Month",
+                    text: activeOption.xAxisTitle,
                 },
             },
         },
     };
 
+    const lastUpdatedText = lastUpdatedAt
+        ? lastUpdatedAt.toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+          })
+        : "Not refreshed yet";
+
+    function handleDimensionChange(nextDimension) {
+        setTimeDimension(nextDimension);
+        setSelectedPeriod(null);
+    }
+
     return (
         <div className="trend-chart-section">
-            {!selectedMonth ? (
-                <>
-                    <div className="trend-header-row">
-                        <p className="trend-helper-text">
-                            Click a month bar to view daily spending. Color goes from light green to deep red based on spending level.
-                        </p>
-                    </div>
+            <div className="trend-toolbar">
+                <div className="time-toggle-group" aria-label="Choose chart time range">
+                    {timeDimensionOptions.map((option) => (
+                        <button
+                            key={option.key}
+                            type="button"
+                            className={`time-toggle-btn ${
+                                option.key === timeDimension ? "is-active" : ""
+                            }`}
+                            aria-pressed={option.key === timeDimension}
+                            onClick={() => handleDimensionChange(option.key)}
+                        >
+                            {option.label}
+                        </button>
+                    ))}
+                </div>
 
-                    <div className="chart-wrapper large-chart">
-                        <Bar data={monthlyBarData} options={monthlyBarOptions} />
-                    </div>
-                </>
+                <div className="refresh-panel">
+                    <span className="last-updated-text">Last update: {lastUpdatedText}</span>
+                    <button
+                        type="button"
+                        className="secondary-btn refresh-btn"
+                        onClick={onRefresh}
+                        disabled={isRefreshing}
+                    >
+                        {isRefreshing ? "Refreshing..." : "Refresh Data"}
+                    </button>
+                </div>
+            </div>
+
+            {periodLabels.length === 0 ? (
+                <div className="trend-box">
+                    <p>No data yet.</p>
+                </div>
             ) : (
                 <>
                     <div className="trend-header-row">
                         <p className="trend-helper-text">
-                            Click a point on the daily line chart to view detailed expenses for that day.
+                            Switch between daily, monthly and annual bills. Click a bar to
+                            inspect the matching records.
                         </p>
-
-                        <button
-                            type="button"
-                            className="secondary-btn"
-                            onClick={() => {
-                                setSelectedMonth(null);
-                                setSelectedDay(null);
-                            }}
-                        >
-                            Back to Monthly View
-                        </button>
                     </div>
 
                     <div className="chart-wrapper large-chart">
-                        <Line data={dailyLineData} options={dailyLineOptions} />
+                        <Bar data={barData} options={barOptions} />
                     </div>
 
-                    <div className="trend-category-panel">
-                        <h3>Category Breakdown in {selectedMonth}</h3>
+                    {selectedPeriod ? (
+                        <div className="period-detail-grid">
+                            <div className="trend-category-panel">
+                                <h3>Category Breakdown in {selectedPeriod}</h3>
 
-                        {Object.keys(categoryTotalsForSelectedMonth).length === 0 ? (
-                            <p>No category data for this month.</p>
-                        ) : (
-                            <div className="trend-category-grid">
-                                {Object.keys(categoryTotalsForSelectedMonth).map((category) => {
-                                    const config = categoryConfig[category] || {
-                                        icon: "📌",
-                                        bgClass: "trend-tag-other",
-                                    };
+                                {Object.keys(categoryTotalsForSelectedPeriod).length === 0 ? (
+                                    <p>No category data for this period.</p>
+                                ) : (
+                                    <div className="trend-category-grid">
+                                        {Object.keys(categoryTotalsForSelectedPeriod).map(
+                                            (category) => {
+                                                const config = categoryConfig[category] || {
+                                                    icon: "📌",
+                                                    bgClass: "trend-tag-other",
+                                                };
 
-                                    return (
-                                        <div
-                                            key={category}
-                                            className={`trend-category-card ${config.bgClass}`}
-                                        >
-                                            <div className="trend-category-top">
-                                                <span className="trend-category-icon">{config.icon}</span>
-                                                <span className="trend-category-name">{category}</span>
-                                            </div>
-                                            <strong className="trend-category-amount">
-                                                ${categoryTotalsForSelectedMonth[category].toFixed(2)}
-                                            </strong>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="daily-detail-panel">
-                        <h3>
-                            {selectedDay
-                                ? `Expense Details for ${selectedDay}`
-                                : "Select a day point to view expense details"}
-                        </h3>
-
-                        {selectedDay ? (
-                            selectedDayExpenses.length > 0 ? (
-                                <div className="daily-expense-list">
-                                    {selectedDayExpenses.map((expense) => {
-                                        const config = categoryConfig[expense.category] || {
-                                            icon: "📌",
-                                            bgClass: "trend-tag-other",
-                                        };
-
-                                        return (
-                                            <div className="daily-expense-card" key={expense.id}>
-                                                <div className="daily-expense-left">
-                                                    <div className="daily-expense-title-row">
-                                                        <span className="daily-expense-icon">{config.icon}</span>
-                                                        <strong>{expense.title}</strong>
+                                                return (
+                                                    <div
+                                                        key={category}
+                                                        className={`trend-category-card ${config.bgClass}`}
+                                                    >
+                                                        <div className="trend-category-top">
+                                                            <span className="trend-category-icon">
+                                                                {config.icon}
+                                                            </span>
+                                                            <span className="trend-category-name">
+                                                                {category}
+                                                            </span>
+                                                        </div>
+                                                        <strong className="trend-category-amount">
+                                                            {formatCurrency(
+                                                                categoryTotalsForSelectedPeriod[
+                                                                    category
+                                                                ]
+                                                            )}
+                                                        </strong>
                                                     </div>
-                                                    <span className={`mini-category-tag ${config.bgClass}`}>
-                                                        {expense.category}
-                                                    </span>
-                                                    <p className="daily-expense-desc">
-                                                        {expense.description || "No description"}
-                                                    </p>
-                                                </div>
+                                                );
+                                            }
+                                        )}
+                                    </div>
+                                )}
+                            </div>
 
-                                                <div className="daily-expense-right">
-                                                    ${expense.amount.toFixed(2)}
+                            <div className="daily-detail-panel">
+                                <h3>Expense Details for {selectedPeriod}</h3>
+
+                                {selectedPeriodExpenses.length > 0 ? (
+                                    <div className="daily-expense-list">
+                                        {selectedPeriodExpenses.map((expense) => {
+                                            const config = categoryConfig[expense.category] || {
+                                                icon: "📌",
+                                                bgClass: "trend-tag-other",
+                                            };
+
+                                            return (
+                                                <div
+                                                    className="daily-expense-card"
+                                                    key={expense.id}
+                                                >
+                                                    <div className="daily-expense-left">
+                                                        <div className="daily-expense-title-row">
+                                                            <span className="daily-expense-icon">
+                                                                {config.icon}
+                                                            </span>
+                                                            <strong>{expense.title}</strong>
+                                                        </div>
+                                                        <span
+                                                            className={`mini-category-tag ${config.bgClass}`}
+                                                        >
+                                                            {expense.category}
+                                                        </span>
+                                                        <p className="daily-expense-desc">
+                                                            {expense.description || "No description"}
+                                                        </p>
+                                                    </div>
+
+                                                    <div className="daily-expense-right">
+                                                        {formatCurrency(expense.amount)}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            ) : (
-                                <p>No expense records for this day.</p>
-                            )
-                        ) : null}
-                    </div>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <p>No expense records for this period.</p>
+                                )}
+                            </div>
+                        </div>
+                    ) : null}
                 </>
             )}
         </div>
