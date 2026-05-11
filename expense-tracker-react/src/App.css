@@ -41,6 +41,113 @@ body {
     opacity: 0.95;
 }
 
+.header-account {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 999px;
+    padding: 8px 10px 8px 16px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #ffffff;
+}
+
+.logout-btn {
+    min-height: 36px;
+    border: none;
+    border-radius: 999px;
+    background: #ffffff;
+    color: #1d4ed8;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 8px 14px;
+}
+
+.logout-btn:hover {
+    background: #eaf1ff;
+}
+
+.auth-page {
+    min-height: 100svh;
+    display: grid;
+    place-items: center;
+    padding: 28px 16px;
+    background:
+        linear-gradient(135deg, rgba(29, 78, 216, 0.94), rgba(37, 99, 235, 0.72)),
+        url("./assets/hero.png") center/cover;
+}
+
+.auth-shell {
+    width: min(100%, 960px);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+    gap: clamp(18px, 4vw, 38px);
+    align-items: center;
+}
+
+.auth-intro {
+    color: #ffffff;
+}
+
+.auth-kicker {
+    margin: 0 0 10px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.auth-intro h1 {
+    margin: 0 0 12px;
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height: 1;
+}
+
+.auth-intro p {
+    max-width: 560px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.05rem;
+}
+
+.auth-card {
+    display: grid;
+    gap: 16px;
+    background: #ffffff;
+    border: 1px solid rgba(219, 231, 247, 0.9);
+    border-radius: 18px;
+    padding: clamp(20px, 4vw, 28px);
+    box-shadow: 0 20px 42px rgba(15, 23, 42, 0.22);
+}
+
+.auth-card h2 {
+    margin: 0 0 6px;
+    color: #1d4ed8;
+}
+
+.auth-muted {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.94rem;
+}
+
+.auth-error {
+    margin: 0;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    background: #fef2f2;
+    color: #b91c1c;
+    padding: 10px 12px;
+    font-weight: 700;
+}
+
+.auth-submit-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 .container {
     width: min(100% - 40px, 1180px);
     margin: clamp(18px, 3vw, 34px) auto;
@@ -363,7 +470,6 @@ textarea {
     font-size: 1.02rem;
 }
 
-<<<<<<< HEAD
 .pie-chart-section {
     display: grid;
     grid-template-columns: minmax(220px, 0.9fr) minmax(220px, 1.1fr);
@@ -422,8 +528,6 @@ textarea {
     white-space: nowrap;
 }
 
-=======
->>>>>>> 1edda9654e7b3cb33c73dfddee9d54fa0891b20d
 .chart-wrapper {
     background-color: #ffffff;
     border-radius: 12px;
@@ -776,6 +880,18 @@ textarea {
 }
 
 @media (max-width: 768px) {
+    .auth-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-intro {
+        text-align: center;
+    }
+
+    .auth-intro p {
+        margin: 0 auto;
+    }
+
     .container {
         width: min(100% - 28px, 680px);
     }
@@ -840,6 +956,15 @@ textarea {
 
     .card {
         padding: 14px;
+    }
+
+    .header-account {
+        width: 100%;
+        border-radius: 14px;
+    }
+
+    .logout-btn {
+        width: 100%;
     }
 
     .primary-btn,

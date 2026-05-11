@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 
+from auth import create_access_token, decode_access_token, verify_password
 from db import engine, create_db_and_tables
-from models import Expense
+from models import Expense, LoginRequest, TokenResponse, User, UserRead
 
 app = FastAPI()
 
@@ -22,6 +23,59 @@ def on_startup():
 @app.get("/")
 def read_root():
     return {"message": "Expense Tracker API is running"}
+
+
+def to_user_read(user: User) -> UserRead:
+    return UserRead(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        role=user.role,
+    )
+
+
+def get_current_user(authorization: str | None) -> User:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing authentication token")
+
+    token = authorization.removeprefix("Bearer ").strip()
+    payload = decode_access_token(token)
+
+    if not payload:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+    user_id = payload.get("user_id")
+
+    with Session(engine) as session:
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=401, detail="User not found")
+        return user
+
+
+@app.post("/auth/login", response_model=TokenResponse)
+def login(credentials: LoginRequest):
+    with Session(engine) as session:
+        statement = select(User).where(User.username == credentials.username)
+        user = session.exec(statement).first()
+
+        if not user or not verify_password(credentials.password, user.password_hash):
+            raise HTTPException(status_code=401, detail="Invalid username or password")
+
+        token = create_access_token(
+            {
+                "sub": user.username,
+                "user_id": user.id,
+                "role": user.role,
+            }
+        )
+        return TokenResponse(access_token=token, user=to_user_read(user))
+
+
+@app.get("/auth/me", response_model=UserRead)
+def read_current_user(authorization: str | None = Header(default=None)):
+    user = get_current_user(authorization)
+    return to_user_read(user)
 
 @app.get("/expenses")
 def get_expenses():

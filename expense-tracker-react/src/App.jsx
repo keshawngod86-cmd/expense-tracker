@@ -1,14 +1,31 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import ExpenseForm from "./components/ExpenseForm";
 import ExpenseList from "./components/ExpenseList";
 import Summary from "./components/Summary";
 import Trend from "./components/Trend";
 import CategoryPieChart from "./components/CategoryPieChart";
+import LoginPage from "./components/LoginPage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const TOKEN_STORAGE_KEY = "expenseTrackerToken";
+const USER_STORAGE_KEY = "expenseTrackerUser";
+
+function loadStoredUser() {
+    try {
+        const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+        return storedUser ? JSON.parse(storedUser) : null;
+    } catch {
+        localStorage.removeItem(USER_STORAGE_KEY);
+        return null;
+    }
+}
 
 function App() {
+    const [authToken, setAuthToken] = useState(
+        () => localStorage.getItem(TOKEN_STORAGE_KEY) || ""
+    );
+    const [currentUser, setCurrentUser] = useState(loadStoredUser);
     const [expenses, setExpenses] = useState([]);
     const [isRefreshingExpenses, setIsRefreshingExpenses] = useState(false);
     const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
@@ -19,15 +36,57 @@ function App() {
     const [startDateFilter, setStartDateFilter] = useState("");
     const [endDateFilter, setEndDateFilter] = useState("");
 
-    useEffect(() => {
-        fetchExpenses();
-    }, []);
+    const getAuthHeaders = useCallback(() => {
+        return authToken ? { Authorization: `Bearer ${authToken}` } : {};
+    }, [authToken]);
 
-    async function fetchExpenses() {
+    async function handleLogin(credentials) {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(credentials),
+        });
+
+        if (!response.ok) {
+            let message = "Login failed. Please check your username and password.";
+
+            try {
+                const errorData = await response.json();
+                if (errorData.detail) {
+                    message = errorData.detail;
+                }
+            } catch {
+                // Keep the default message if the API returns non-JSON text.
+            }
+
+            throw new Error(message);
+        }
+
+        const data = await response.json();
+        setAuthToken(data.access_token);
+        setCurrentUser(data.user);
+        localStorage.setItem(TOKEN_STORAGE_KEY, data.access_token);
+        localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
+    }
+
+    function handleLogout() {
+        setAuthToken("");
+        setCurrentUser(null);
+        setExpenses([]);
+        setEditingExpense(null);
+        localStorage.removeItem(TOKEN_STORAGE_KEY);
+        localStorage.removeItem(USER_STORAGE_KEY);
+    }
+
+    const fetchExpenses = useCallback(async function fetchExpenses() {
         setIsRefreshingExpenses(true);
 
         try {
-            const response = await fetch(`${API_BASE_URL}/expenses`);
+            const response = await fetch(`${API_BASE_URL}/expenses`, {
+                headers: getAuthHeaders(),
+            });
 
             if (!response.ok) {
                 throw new Error("Failed to fetch expenses");
@@ -41,7 +100,13 @@ function App() {
         } finally {
             setIsRefreshingExpenses(false);
         }
-    }
+    }, [getAuthHeaders]);
+
+    useEffect(() => {
+        if (currentUser) {
+            fetchExpenses();
+        }
+    }, [currentUser, fetchExpenses]);
 
     async function addExpense(expense) {
         try {
@@ -49,6 +114,7 @@ function App() {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    ...getAuthHeaders(),
                 },
                 body: JSON.stringify(expense),
             });
@@ -72,6 +138,7 @@ function App() {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
+                        ...getAuthHeaders(),
                     },
                     body: JSON.stringify(updatedExpense),
                 }
@@ -93,6 +160,7 @@ function App() {
         try {
             const response = await fetch(`${API_BASE_URL}/expenses/${id}`, {
                 method: "DELETE",
+                headers: getAuthHeaders(),
             });
 
             if (!response.ok) {
@@ -141,12 +209,28 @@ function App() {
         });
     }, [expenses, searchText, categoryFilter, startDateFilter, endDateFilter]);
 
+    if (!currentUser) {
+        return <LoginPage onLogin={handleLogin} />;
+    }
+
     return (
         <>
             <header className="site-header">
                 <div className="header-content">
                     <h1>Expense Tracker</h1>
                     <p>Track your daily spending in a smarter and cleaner way</p>
+                    <div className="header-account">
+                        <span>
+                            Signed in as <strong>{currentUser.username}</strong>
+                        </span>
+                        <button
+                            type="button"
+                            className="logout-btn"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </button>
+                    </div>
                 </div>
             </header>
 
