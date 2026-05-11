@@ -363,6 +363,7 @@ textarea {
     font-size: 1.02rem;
 }
 
+<<<<<<< HEAD
 .pie-chart-section {
     display: grid;
     grid-template-columns: minmax(220px, 0.9fr) minmax(220px, 1.1fr);
@@ -421,6 +422,8 @@ textarea {
     white-space: nowrap;
 }
 
+=======
+>>>>>>> 1edda9654e7b3cb33c73dfddee9d54fa0891b20d
 .chart-wrapper {
     background-color: #ffffff;
     border-radius: 12px;
