@@ -69,6 +69,10 @@ body {
     grid-column: 1;
 }
 
+.pie-card {
+    grid-column: 2;
+}
+
 .trend-card {
     grid-column: 1 / -1;
 }
@@ -302,6 +306,12 @@ textarea {
     padding: 12px;
 }
 
+.summary-section-title {
+    margin: 0 0 8px;
+    color: #1d4ed8;
+    font-size: 0.98rem;
+}
+
 .summary-row {
     display: flex;
     justify-content: space-between;
@@ -315,6 +325,26 @@ textarea {
     border-bottom: none;
 }
 
+.summary-expense-amount {
+    color: #d64545;
+    white-space: nowrap;
+}
+
+.summary-income-amount {
+    color: #15803d;
+    white-space: nowrap;
+}
+
+.income-summary-block {
+    margin-top: 16px;
+    border-top: 1px solid #dbe7f7;
+    padding-top: 12px;
+}
+
+.income-row {
+    background: rgba(220, 252, 231, 0.36);
+}
+
 .total-spending-text {
     margin-top: 16px;
     margin-bottom: 0;
@@ -324,6 +354,71 @@ textarea {
 #total-spending {
     color: #d64545;
     font-weight: bold;
+}
+
+.total-income-text {
+    margin-top: 8px;
+    margin-bottom: 0;
+    color: #166534;
+    font-size: 1.02rem;
+}
+
+.pie-chart-section {
+    display: grid;
+    grid-template-columns: minmax(220px, 0.9fr) minmax(220px, 1.1fr);
+    gap: 18px;
+    align-items: center;
+}
+
+.pie-chart-wrapper {
+    height: 260px;
+    min-width: 0;
+}
+
+.pie-empty-state {
+    background: #f8fbff;
+    border: 1px solid #dbe7f7;
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.pie-breakdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.pie-breakdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #f8fbff;
+}
+
+.pie-category-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    font-weight: 700;
+}
+
+.pie-color-swatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    flex: 0 0 auto;
+}
+
+.pie-category-value {
+    color: #475569;
+    font-weight: 700;
+    white-space: nowrap;
 }
 
 .chart-wrapper {
@@ -384,6 +479,68 @@ textarea {
     gap: 14px;
 }
 
+.trend-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.time-toggle-group {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 6px;
+    border: 1px solid #dbe7f7;
+    border-radius: 14px;
+    background: #f8fbff;
+}
+
+.time-toggle-btn {
+    border: none;
+    background: transparent;
+    color: #1f2937;
+    cursor: pointer;
+    min-height: 40px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    font-weight: 700;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.time-toggle-btn:hover {
+    background: #eaf1ff;
+}
+
+.time-toggle-btn.is-active {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.refresh-panel {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.last-updated-text {
+    color: #64748b;
+    font-size: 0.9rem;
+}
+
+.refresh-btn {
+    margin-top: 0;
+}
+
+.refresh-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
 .trend-header-row {
     display: flex;
     justify-content: space-between;
@@ -400,6 +557,20 @@ textarea {
 
 .large-chart {
     height: clamp(260px, 36vw, 360px);
+}
+
+.trend-box {
+    background: #f8fbff;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    padding: 16px;
+}
+
+.period-detail-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: 14px;
+    align-items: start;
 }
 
 .trend-category-panel {
@@ -592,6 +763,10 @@ textarea {
         grid-column: 2;
     }
 
+    .pie-card {
+        grid-column: 1 / -1;
+    }
+
     .trend-card {
         grid-column: 1 / -1;
     }
@@ -610,6 +785,7 @@ textarea {
     .filter-card,
     .list-card,
     .summary-card,
+    .pie-card,
     .trend-card {
         grid-column: 1;
     }
@@ -642,6 +818,10 @@ textarea {
 
     .daily-expense-card {
         flex-direction: column;
+    }
+
+    .pie-chart-section {
+        grid-template-columns: 1fr;
     }
 }
 
@@ -685,12 +865,41 @@ textarea {
         flex-direction: column;
     }
 
+    .pie-chart-wrapper {
+        height: 230px;
+    }
+
+    .pie-breakdown-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pie-category-value {
+        white-space: normal;
+    }
+
     .large-chart {
         height: 250px;
     }
 
+    .trend-toolbar,
     .trend-header-row {
         align-items: stretch;
+    }
+
+    .trend-toolbar,
+    .refresh-panel,
+    .time-toggle-group {
+        width: 100%;
+    }
+
+    .time-toggle-group {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .period-detail-grid {
+        grid-template-columns: 1fr;
     }
 
     .trend-category-grid {

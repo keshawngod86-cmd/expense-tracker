@@ -4,11 +4,14 @@ import ExpenseForm from "./components/ExpenseForm";
 import ExpenseList from "./components/ExpenseList";
 import Summary from "./components/Summary";
 import Trend from "./components/Trend";
+import CategoryPieChart from "./components/CategoryPieChart";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
 function App() {
     const [expenses, setExpenses] = useState([]);
+    const [isRefreshingExpenses, setIsRefreshingExpenses] = useState(false);
+    const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
     const [editingExpense, setEditingExpense] = useState(null);
 
     const [searchText, setSearchText] = useState("");
@@ -21,6 +24,8 @@ function App() {
     }, []);
 
     async function fetchExpenses() {
+        setIsRefreshingExpenses(true);
+
         try {
             const response = await fetch(`${API_BASE_URL}/expenses`);
 
@@ -30,8 +35,11 @@ function App() {
 
             const data = await response.json();
             setExpenses(data);
+            setLastUpdatedAt(new Date());
         } catch (error) {
             console.error("Failed to fetch expenses:", error);
+        } finally {
+            setIsRefreshingExpenses(false);
         }
     }
 
@@ -235,9 +243,19 @@ function App() {
                     <Summary expenses={filteredExpenses} />
                 </section>
 
+                <section className="card pie-card">
+                    <h2>Spending Share</h2>
+                    <CategoryPieChart expenses={filteredExpenses} />
+                </section>
+
                 <section className="card trend-card">
-                    <h2>Monthly Trend</h2>
-                    <Trend expenses={filteredExpenses} />
+                    <h2>Spending Statistics</h2>
+                    <Trend
+                        expenses={filteredExpenses}
+                        onRefresh={fetchExpenses}
+                        isRefreshing={isRefreshingExpenses}
+                        lastUpdatedAt={lastUpdatedAt}
+                    />
                 </section>
             </main>
 
