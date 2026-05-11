@@ -302,6 +302,12 @@ textarea {
     padding: 12px;
 }
 
+.summary-section-title {
+    margin: 0 0 8px;
+    color: #1d4ed8;
+    font-size: 0.98rem;
+}
+
 .summary-row {
     display: flex;
     justify-content: space-between;
@@ -315,6 +321,26 @@ textarea {
     border-bottom: none;
 }
 
+.summary-expense-amount {
+    color: #d64545;
+    white-space: nowrap;
+}
+
+.summary-income-amount {
+    color: #15803d;
+    white-space: nowrap;
+}
+
+.income-summary-block {
+    margin-top: 16px;
+    border-top: 1px solid #dbe7f7;
+    padding-top: 12px;
+}
+
+.income-row {
+    background: rgba(220, 252, 231, 0.36);
+}
+
 .total-spending-text {
     margin-top: 16px;
     margin-bottom: 0;
@@ -324,6 +350,13 @@ textarea {
 #total-spending {
     color: #d64545;
     font-weight: bold;
+}
+
+.total-income-text {
+    margin-top: 8px;
+    margin-bottom: 0;
+    color: #166534;
+    font-size: 1.02rem;
 }
 
 .chart-wrapper {
