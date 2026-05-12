@@ -945,10 +945,6 @@ textarea {
     margin-bottom: 8px;
 }
 
-.trend-category-icon {
-    font-size: 1.1rem;
-}
-
 .trend-category-name {
     font-weight: bold;
 }
@@ -1052,10 +1048,6 @@ textarea {
     gap: 8px;
     margin-bottom: 8px;
     overflow-wrap: anywhere;
-}
-
-.daily-expense-icon {
-    font-size: 1.05rem;
 }
 
 .daily-expense-desc {

@@ -12,13 +12,13 @@ import { Bar } from "react-chartjs-2";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-const categoryConfig = {
-    Food: { icon: "🍔", bgClass: "trend-tag-food" },
-    Transport: { icon: "🚗", bgClass: "trend-tag-transport" },
-    Shopping: { icon: "🛍️", bgClass: "trend-tag-shopping" },
-    Bills: { icon: "💡", bgClass: "trend-tag-bills" },
-    Entertainment: { icon: "🎮", bgClass: "trend-tag-entertainment" },
-    Other: { icon: "📦", bgClass: "trend-tag-other" },
+const categoryClasses = {
+    Food: "trend-tag-food",
+    Transport: "trend-tag-transport",
+    Shopping: "trend-tag-shopping",
+    Bills: "trend-tag-bills",
+    Entertainment: "trend-tag-entertainment",
+    Other: "trend-tag-other",
 };
 
 const timeDimensionOptions = [
@@ -102,8 +102,7 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
 
         expenses.forEach((expense) => {
             const periodKey = activeOption.getPeriodKey(expense);
-            if (!totals[periodKey]) totals[periodKey] = 0;
-            totals[periodKey] += expense.amount;
+            totals[periodKey] = (totals[periodKey] || 0) + expense.amount;
         });
 
         return totals;
@@ -121,8 +120,7 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
         const totals = {};
 
         selectedPeriodExpenses.forEach((expense) => {
-            if (!totals[expense.category]) totals[expense.category] = 0;
-            totals[expense.category] += expense.amount;
+            totals[expense.category] = (totals[expense.category] || 0) + expense.amount;
         });
 
         return totals;
@@ -268,35 +266,28 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
                                 ) : (
                                     <div className="trend-category-grid">
                                         {Object.keys(categoryTotalsForSelectedPeriod).map(
-                                            (category) => {
-                                                const config = categoryConfig[category] || {
-                                                    icon: "📌",
-                                                    bgClass: "trend-tag-other",
-                                                };
-
-                                                return (
-                                                    <div
-                                                        key={category}
-                                                        className={`trend-category-card ${config.bgClass}`}
-                                                    >
-                                                        <div className="trend-category-top">
-                                                            <span className="trend-category-icon">
-                                                                {config.icon}
-                                                            </span>
-                                                            <span className="trend-category-name">
-                                                                {category}
-                                                            </span>
-                                                        </div>
-                                                        <strong className="trend-category-amount">
-                                                            {formatCurrency(
-                                                                categoryTotalsForSelectedPeriod[
-                                                                    category
-                                                                ]
-                                                            )}
-                                                        </strong>
+                                            (category) => (
+                                                <div
+                                                    key={category}
+                                                    className={`trend-category-card ${
+                                                        categoryClasses[category] ||
+                                                        categoryClasses.Other
+                                                    }`}
+                                                >
+                                                    <div className="trend-category-top">
+                                                        <span className="trend-category-name">
+                                                            {category}
+                                                        </span>
                                                     </div>
-                                                );
-                                            }
+                                                    <strong className="trend-category-amount">
+                                                        {formatCurrency(
+                                                            categoryTotalsForSelectedPeriod[
+                                                                category
+                                                            ]
+                                                        )}
+                                                    </strong>
+                                                </div>
+                                            )
                                         )}
                                     </div>
                                 )}
@@ -307,40 +298,33 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
 
                                 {selectedPeriodExpenses.length > 0 ? (
                                     <div className="daily-expense-list">
-                                        {selectedPeriodExpenses.map((expense) => {
-                                            const config = categoryConfig[expense.category] || {
-                                                icon: "📌",
-                                                bgClass: "trend-tag-other",
-                                            };
-
-                                            return (
-                                                <div
-                                                    className="daily-expense-card"
-                                                    key={expense.id}
-                                                >
-                                                    <div className="daily-expense-left">
-                                                        <div className="daily-expense-title-row">
-                                                            <span className="daily-expense-icon">
-                                                                {config.icon}
-                                                            </span>
-                                                            <strong>{expense.title}</strong>
-                                                        </div>
-                                                        <span
-                                                            className={`mini-category-tag ${config.bgClass}`}
-                                                        >
-                                                            {expense.category}
-                                                        </span>
-                                                        <p className="daily-expense-desc">
-                                                            {expense.description || "No description"}
-                                                        </p>
+                                        {selectedPeriodExpenses.map((expense) => (
+                                            <div
+                                                className="daily-expense-card"
+                                                key={expense.id}
+                                            >
+                                                <div className="daily-expense-left">
+                                                    <div className="daily-expense-title-row">
+                                                        <strong>{expense.title}</strong>
                                                     </div>
-
-                                                    <div className="daily-expense-right">
-                                                        {formatCurrency(expense.amount)}
-                                                    </div>
+                                                    <span
+                                                        className={`mini-category-tag ${
+                                                            categoryClasses[expense.category] ||
+                                                            categoryClasses.Other
+                                                        }`}
+                                                    >
+                                                        {expense.category}
+                                                    </span>
+                                                    <p className="daily-expense-desc">
+                                                        {expense.description || "No description"}
+                                                    </p>
                                                 </div>
-                                            );
-                                        })}
+
+                                                <div className="daily-expense-right">
+                                                    {formatCurrency(expense.amount)}
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
                                 ) : (
                                     <p>No expense records for this period.</p>

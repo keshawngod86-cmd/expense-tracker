@@ -7,10 +7,7 @@ import Trend from "./components/Trend";
 import CategoryPieChart from "./components/CategoryPieChart";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
-<<<<<<< Updated upstream
-=======
 import AdminPanel from "./components/AdminPanel";
->>>>>>> Stashed changes
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 const TOKEN_STORAGE_KEY = "expenseTrackerToken";
@@ -32,10 +29,7 @@ function App() {
     );
     const [currentUser, setCurrentUser] = useState(loadStoredUser);
     const [authMode, setAuthMode] = useState("login");
-<<<<<<< Updated upstream
-=======
     const [activeView, setActiveView] = useState("dashboard");
->>>>>>> Stashed changes
     const [expenses, setExpenses] = useState([]);
     const [isRefreshingExpenses, setIsRefreshingExpenses] = useState(false);
     const [lastUpdatedAt, setLastUpdatedAt] = useState(null);

@@ -39,13 +39,10 @@ class RegisterRequest(SQLModel):
     password: str
 
 
-<<<<<<< Updated upstream
-=======
 class RoleUpdateRequest(SQLModel):
     role: str
 
 
->>>>>>> Stashed changes
 class UserRead(SQLModel):
     id: int
     username: str

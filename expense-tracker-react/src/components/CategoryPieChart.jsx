@@ -44,12 +44,8 @@ function CategoryPieChart({ expenses }) {
 
         expenses.forEach((expense) => {
             if (isIncomeEntry(expense)) return;
-
-            if (!totals[expense.category]) {
-                totals[expense.category] = 0;
-            }
-
-            totals[expense.category] += Math.abs(expense.amount);
+            totals[expense.category] =
+                (totals[expense.category] || 0) + Math.abs(expense.amount);
         });
 
         return Object.entries(totals).sort(([, amountA], [, amountB]) => amountB - amountA);
@@ -127,7 +123,7 @@ function CategoryPieChart({ expenses }) {
                                 {category}
                             </span>
                             <span className="pie-category-value">
-                                {formatCurrency(amount)} · {percentage}%
+                                {formatCurrency(amount)} ({percentage}%)
                             </span>
                         </div>
                     );

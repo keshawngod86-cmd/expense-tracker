@@ -28,40 +28,19 @@ function Summary({ expenses }) {
     const expenseCategoryTotals = {};
     const incomeCategoryTotals = {};
 
-    const categoryIcons = {
-        Food: "🍔",
-        Transport: "🚗",
-        Shopping: "🛍️",
-        Bills: "💡",
-        Entertainment: "🎮",
-        Other: "📦",
-        Income: "💰",
-        Salary: "💰",
-        Allowance: "💰",
-        Refund: "↩️",
-    };
-
     expenses.forEach((expense) => {
         const amount = Math.abs(expense.amount);
 
         if (isIncomeEntry(expense)) {
             totalIncome += amount;
-
-            if (!incomeCategoryTotals[expense.category]) {
-                incomeCategoryTotals[expense.category] = 0;
-            }
-
-            incomeCategoryTotals[expense.category] += amount;
+            incomeCategoryTotals[expense.category] =
+                (incomeCategoryTotals[expense.category] || 0) + amount;
             return;
         }
 
         totalSpending += amount;
-
-        if (!expenseCategoryTotals[expense.category]) {
-            expenseCategoryTotals[expense.category] = 0;
-        }
-
-        expenseCategoryTotals[expense.category] += amount;
+        expenseCategoryTotals[expense.category] =
+            (expenseCategoryTotals[expense.category] || 0) + amount;
     });
 
     const expenseRows = sortTotalsDescending(expenseCategoryTotals);
@@ -77,9 +56,7 @@ function Summary({ expenses }) {
                 ) : (
                     expenseRows.map(([category, amount]) => (
                         <div className="summary-row" key={category}>
-                            <span>
-                                {categoryIcons[category] || "📌"} {category}
-                            </span>
+                            <span>{category}</span>
                             <strong className="summary-expense-amount">
                                 {formatCurrency(amount)}
                             </strong>
@@ -93,9 +70,7 @@ function Summary({ expenses }) {
 
                         {incomeRows.map(([category, amount]) => (
                             <div className="summary-row income-row" key={category}>
-                                <span>
-                                    {categoryIcons[category] || "💰"} {category}
-                                </span>
+                                <span>{category}</span>
                                 <strong className="summary-income-amount">
                                     {formatCurrency(amount)}
                                 </strong>

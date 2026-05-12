@@ -1,25 +1,22 @@
-﻿function ExpenseItem({ expense, onDeleteExpense, onEditExpense }) {
-    const categoryConfig = {
-        Food: { icon: "🍔", className: "tag-food" },
-        Transport: { icon: "🚗", className: "tag-transport" },
-        Shopping: { icon: "🛍️", className: "tag-shopping" },
-        Bills: { icon: "💡", className: "tag-bills" },
-        Entertainment: { icon: "🎮", className: "tag-entertainment" },
-        Other: { icon: "📦", className: "tag-other" },
-    };
+const categoryClasses = {
+    Food: "tag-food",
+    Transport: "tag-transport",
+    Shopping: "tag-shopping",
+    Bills: "tag-bills",
+    Entertainment: "tag-entertainment",
+    Other: "tag-other",
+};
 
-    const currentCategory = categoryConfig[expense.category] || {
-        icon: "📌",
-        className: "tag-other",
-    };
+function ExpenseItem({ expense, onDeleteExpense, onEditExpense }) {
+    const categoryClass = categoryClasses[expense.category] || categoryClasses.Other;
 
     return (
         <li className="expense-item modern-item">
             <div className="expense-top">
                 <div>
                     <h3>{expense.title}</h3>
-                    <span className={`category-tag ${currentCategory.className}`}>
-                        {currentCategory.icon} {expense.category}
+                    <span className={`category-tag ${categoryClass}`}>
+                        {expense.category}
                     </span>
                 </div>
 

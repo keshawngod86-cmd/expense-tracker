@@ -6,9 +6,6 @@ from sqlmodel import Session, select
 
 from auth import create_access_token, decode_access_token, hash_password, verify_password
 from db import engine, create_db_and_tables
-<<<<<<< Updated upstream
-from models import Expense, LoginRequest, RegisterRequest, TokenResponse, User, UserRead
-=======
 from models import (
     Expense,
     LoginRequest,
@@ -20,7 +17,6 @@ from models import (
     UserActivityRead,
     UserRead,
 )
->>>>>>> Stashed changes
 
 app = FastAPI()
 
@@ -179,8 +175,6 @@ def register(account: RegisterRequest):
         session.commit()
         session.refresh(new_user)
 
-<<<<<<< Updated upstream
-=======
         log_activity(
             session,
             new_user,
@@ -189,7 +183,6 @@ def register(account: RegisterRequest):
         )
         session.commit()
 
->>>>>>> Stashed changes
         token = create_access_token(
             {
                 "sub": new_user.username,
