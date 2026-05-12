@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function LoginPage({ onLogin }) {
+function LoginPage({ onLogin, onShowRegister }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -39,8 +39,7 @@ function LoginPage({ onLogin }) {
                     <div>
                         <h2>Login</h2>
                         <p className="auth-muted">
-                            Accounts can be created from the register screen in the next
-                            step.
+                            Sign in with an existing account or create a new one.
                         </p>
                     </div>
 
@@ -83,6 +82,17 @@ function LoginPage({ onLogin }) {
                     >
                         {isSubmitting ? "Signing in..." : "Sign In"}
                     </button>
+
+                    <p className="auth-switch-text">
+                        New to the tracker?{" "}
+                        <button
+                            type="button"
+                            className="auth-link-btn"
+                            onClick={onShowRegister}
+                        >
+                            Create account
+                        </button>
+                    </p>
                 </form>
             </section>
         </main>

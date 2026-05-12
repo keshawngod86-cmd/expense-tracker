@@ -2,9 +2,9 @@ from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlmodel import Session, select
 
-from auth import create_access_token, decode_access_token, verify_password
+from auth import create_access_token, decode_access_token, hash_password, verify_password
 from db import engine, create_db_and_tables
-from models import Expense, LoginRequest, TokenResponse, User, UserRead
+from models import Expense, LoginRequest, RegisterRequest, TokenResponse, User, UserRead
 
 app = FastAPI()
 
@@ -70,6 +70,53 @@ def login(credentials: LoginRequest):
             }
         )
         return TokenResponse(access_token=token, user=to_user_read(user))
+
+
+@app.post("/auth/register", response_model=TokenResponse, status_code=201)
+def register(account: RegisterRequest):
+    username = account.username.strip()
+    email = account.email.strip() if account.email else None
+
+    if len(username) < 3:
+        raise HTTPException(
+            status_code=400,
+            detail="Username must be at least 3 characters long",
+        )
+
+    if len(account.password) < 6:
+        raise HTTPException(
+            status_code=400,
+            detail="Password must be at least 6 characters long",
+        )
+
+    with Session(engine) as session:
+        existing_user = session.exec(
+            select(User).where(User.username == username)
+        ).first()
+
+        if existing_user:
+            raise HTTPException(status_code=409, detail="Username already exists")
+
+        user_count = len(session.exec(select(User)).all())
+        new_user = User(
+            username=username,
+            email=email,
+            password_hash=hash_password(account.password),
+            role="admin" if user_count == 0 else "user",
+        )
+
+        session.add(new_user)
+        session.commit()
+        session.refresh(new_user)
+
+        token = create_access_token(
+            {
+                "sub": new_user.username,
+                "user_id": new_user.id,
+                "role": new_user.role,
+            }
+        )
+        return TokenResponse(access_token=token, user=to_user_read(new_user))
 
 
 @app.get("/auth/me", response_model=UserRead)

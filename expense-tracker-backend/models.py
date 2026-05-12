@@ -24,6 +24,12 @@ class LoginRequest(SQLModel):
     password: str
 
 
+class RegisterRequest(SQLModel):
+    username: str
+    email: Optional[str] = None
+    password: str
+
+
 class UserRead(SQLModel):
     id: int
     username: str

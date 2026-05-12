@@ -6,6 +6,7 @@ import Summary from "./components/Summary";
 import Trend from "./components/Trend";
 import CategoryPieChart from "./components/CategoryPieChart";
 import LoginPage from "./components/LoginPage";
+import RegisterPage from "./components/RegisterPage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 const TOKEN_STORAGE_KEY = "expenseTrackerToken";
@@ -26,6 +27,7 @@ function App() {
         () => localStorage.getItem(TOKEN_STORAGE_KEY) || ""
     );
     const [currentUser, setCurrentUser] = useState(loadStoredUser);
+    const [authMode, setAuthMode] = useState("login");
     const [expenses, setExpenses] = useState([]);
     const [isRefreshingExpenses, setIsRefreshingExpenses] = useState(false);
     const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
@@ -41,16 +43,27 @@ function App() {
     }, [authToken]);
 
     async function handleLogin(credentials) {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        await submitAuthRequest("login", credentials);
+    }
+
+    async function handleRegister(account) {
+        await submitAuthRequest("register", account);
+    }
+
+    async function submitAuthRequest(authPath, payload) {
+        const response = await fetch(`${API_BASE_URL}/auth/${authPath}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(credentials),
+            body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
-            let message = "Login failed. Please check your username and password.";
+            let message =
+                authPath === "register"
+                    ? "Registration failed. Please check your details."
+                    : "Login failed. Please check your username and password.";
 
             try {
                 const errorData = await response.json();
@@ -210,7 +223,21 @@ function App() {
     }, [expenses, searchText, categoryFilter, startDateFilter, endDateFilter]);
 
     if (!currentUser) {
-        return <LoginPage onLogin={handleLogin} />;
+        if (authMode === "register") {
+            return (
+                <RegisterPage
+                    onRegister={handleRegister}
+                    onShowLogin={() => setAuthMode("login")}
+                />
+            );
+        }
+
+        return (
+            <LoginPage
+                onLogin={handleLogin}
+                onShowRegister={() => setAuthMode("register")}
+            />
+        );
     }
 
     return (
