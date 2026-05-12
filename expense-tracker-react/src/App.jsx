@@ -7,6 +7,10 @@ import Trend from "./components/Trend";
 import CategoryPieChart from "./components/CategoryPieChart";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
+<<<<<<< Updated upstream
+=======
+import AdminPanel from "./components/AdminPanel";
+>>>>>>> Stashed changes
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 const TOKEN_STORAGE_KEY = "expenseTrackerToken";
@@ -28,6 +32,10 @@ function App() {
     );
     const [currentUser, setCurrentUser] = useState(loadStoredUser);
     const [authMode, setAuthMode] = useState("login");
+<<<<<<< Updated upstream
+=======
+    const [activeView, setActiveView] = useState("dashboard");
+>>>>>>> Stashed changes
     const [expenses, setExpenses] = useState([]);
     const [isRefreshingExpenses, setIsRefreshingExpenses] = useState(false);
     const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
@@ -80,13 +88,26 @@ function App() {
         const data = await response.json();
         setAuthToken(data.access_token);
         setCurrentUser(data.user);
+        setActiveView("dashboard");
         localStorage.setItem(TOKEN_STORAGE_KEY, data.access_token);
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
     }
 
-    function handleLogout() {
+    async function handleLogout() {
+        if (authToken) {
+            try {
+                await fetch(`${API_BASE_URL}/auth/logout`, {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                });
+            } catch (error) {
+                console.error("Logout activity was not recorded:", error);
+            }
+        }
+
         setAuthToken("");
         setCurrentUser(null);
+        setActiveView("dashboard");
         setExpenses([]);
         setEditingExpense(null);
         localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -222,6 +243,8 @@ function App() {
         });
     }, [expenses, searchText, categoryFilter, startDateFilter, endDateFilter]);
 
+    const canViewAdmin = currentUser?.role === "admin";
+
     if (!currentUser) {
         if (authMode === "register") {
             return (
@@ -249,7 +272,28 @@ function App() {
                     <div className="header-account">
                         <span>
                             Signed in as <strong>{currentUser.username}</strong>
+                            {canViewAdmin ? " (admin)" : ""}
                         </span>
+                        <button
+                            type="button"
+                            className={`header-nav-btn ${
+                                activeView === "dashboard" ? "is-active" : ""
+                            }`}
+                            onClick={() => setActiveView("dashboard")}
+                        >
+                            Dashboard
+                        </button>
+                        {canViewAdmin ? (
+                            <button
+                                type="button"
+                                className={`header-nav-btn ${
+                                    activeView === "admin" ? "is-active" : ""
+                                }`}
+                                onClick={() => setActiveView("admin")}
+                            >
+                                Admin
+                            </button>
+                        ) : null}
                         <button
                             type="button"
                             className="logout-btn"
@@ -261,114 +305,122 @@ function App() {
                 </div>
             </header>
 
-            <main className="container dashboard-layout">
-                <section className="card card-highlight form-card">
-                    <h2>{editingExpense ? "Edit Expense" : "Add New Expense"}</h2>
-                    <ExpenseForm
-                        key={editingExpense ? editingExpense.id : "new-expense"}
-                        onAddExpense={addExpense}
-                        onUpdateExpense={updateExpense}
-                        editingExpense={editingExpense}
-                        onFinishEdit={clearEditingExpense}
-                    />
-                </section>
+            {activeView === "admin" && canViewAdmin ? (
+                <AdminPanel
+                    apiBaseUrl={API_BASE_URL}
+                    authToken={authToken}
+                    currentUser={currentUser}
+                />
+            ) : (
+                <main className="container dashboard-layout">
+                    <section className="card card-highlight form-card">
+                        <h2>{editingExpense ? "Edit Expense" : "Add New Expense"}</h2>
+                        <ExpenseForm
+                            key={editingExpense ? editingExpense.id : "new-expense"}
+                            onAddExpense={addExpense}
+                            onUpdateExpense={updateExpense}
+                            editingExpense={editingExpense}
+                            onFinishEdit={clearEditingExpense}
+                        />
+                    </section>
 
-                <section className="card filter-card">
-                    <h2>Search & Filter</h2>
+                    <section className="card filter-card">
+                        <h2>Search & Filter</h2>
 
-                    <div className="filter-grid">
-                        <div className="form-group">
-                            <label htmlFor="searchText">Search</label>
-                            <input
-                                id="searchText"
-                                type="text"
-                                placeholder="Search title or description"
-                                value={searchText}
-                                onChange={(e) => setSearchText(e.target.value)}
-                            />
+                        <div className="filter-grid">
+                            <div className="form-group">
+                                <label htmlFor="searchText">Search</label>
+                                <input
+                                    id="searchText"
+                                    type="text"
+                                    placeholder="Search title or description"
+                                    value={searchText}
+                                    onChange={(e) => setSearchText(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="categoryFilter">Category</label>
+                                <select
+                                    id="categoryFilter"
+                                    value={categoryFilter}
+                                    onChange={(e) => setCategoryFilter(e.target.value)}
+                                >
+                                    <option value="All">All</option>
+                                    <option value="Food">Food</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Shopping">Shopping</option>
+                                    <option value="Bills">Bills</option>
+                                    <option value="Entertainment">Entertainment</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="startDateFilter">Start Date</label>
+                                <input
+                                    id="startDateFilter"
+                                    type="date"
+                                    value={startDateFilter}
+                                    onChange={(e) => setStartDateFilter(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label htmlFor="endDateFilter">End Date</label>
+                                <input
+                                    id="endDateFilter"
+                                    type="date"
+                                    value={endDateFilter}
+                                    onChange={(e) => setEndDateFilter(e.target.value)}
+                                />
+                            </div>
                         </div>
 
-                        <div className="form-group">
-                            <label htmlFor="categoryFilter">Category</label>
-                            <select
-                                id="categoryFilter"
-                                value={categoryFilter}
-                                onChange={(e) => setCategoryFilter(e.target.value)}
-                            >
-                                <option value="All">All</option>
-                                <option value="Food">Food</option>
-                                <option value="Transport">Transport</option>
-                                <option value="Shopping">Shopping</option>
-                                <option value="Bills">Bills</option>
-                                <option value="Entertainment">Entertainment</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
+                        <button
+                            type="button"
+                            className="secondary-btn"
+                            onClick={() => {
+                                setSearchText("");
+                                setCategoryFilter("All");
+                                setStartDateFilter("");
+                                setEndDateFilter("");
+                            }}
+                        >
+                            Clear Filters
+                        </button>
+                    </section>
 
-                        <div className="form-group">
-                            <label htmlFor="startDateFilter">Start Date</label>
-                            <input
-                                id="startDateFilter"
-                                type="date"
-                                value={startDateFilter}
-                                onChange={(e) => setStartDateFilter(e.target.value)}
-                            />
-                        </div>
+                    <section className="card list-card">
+                        <h2>Expense List</h2>
+                        <ExpenseList
+                            expenses={filteredExpenses}
+                            onDeleteExpense={deleteExpense}
+                            onEditExpense={startEditExpense}
+                        />
+                    </section>
 
-                        <div className="form-group">
-                            <label htmlFor="endDateFilter">End Date</label>
-                            <input
-                                id="endDateFilter"
-                                type="date"
-                                value={endDateFilter}
-                                onChange={(e) => setEndDateFilter(e.target.value)}
-                            />
-                        </div>
-                    </div>
+                    <section className="card summary-card">
+                        <h2>Category Summary</h2>
+                        <Summary expenses={filteredExpenses} />
+                    </section>
 
-                    <button
-                        type="button"
-                        className="secondary-btn"
-                        onClick={() => {
-                            setSearchText("");
-                            setCategoryFilter("All");
-                            setStartDateFilter("");
-                            setEndDateFilter("");
-                        }}
-                    >
-                        Clear Filters
-                    </button>
-                </section>
+                    <section className="card pie-card">
+                        <h2>Spending Share</h2>
+                        <CategoryPieChart expenses={filteredExpenses} />
+                    </section>
 
-                <section className="card list-card">
-                    <h2>Expense List</h2>
-                    <ExpenseList
-                        expenses={filteredExpenses}
-                        onDeleteExpense={deleteExpense}
-                        onEditExpense={startEditExpense}
-                    />
-                </section>
-
-                <section className="card summary-card">
-                    <h2>Category Summary</h2>
-                    <Summary expenses={filteredExpenses} />
-                </section>
-
-                <section className="card pie-card">
-                    <h2>Spending Share</h2>
-                    <CategoryPieChart expenses={filteredExpenses} />
-                </section>
-
-                <section className="card trend-card">
-                    <h2>Spending Statistics</h2>
-                    <Trend
-                        expenses={filteredExpenses}
-                        onRefresh={fetchExpenses}
-                        isRefreshing={isRefreshingExpenses}
-                        lastUpdatedAt={lastUpdatedAt}
-                    />
-                </section>
-            </main>
+                    <section className="card trend-card">
+                        <h2>Spending Statistics</h2>
+                        <Trend
+                            expenses={filteredExpenses}
+                            onRefresh={fetchExpenses}
+                            isRefreshing={isRefreshingExpenses}
+                            lastUpdatedAt={lastUpdatedAt}
+                        />
+                    </section>
+                </main>
+            )}
 
             <footer className="site-footer">
                 <p>Built with React, FastAPI and MySQL for Internet Programming practice</p>

@@ -19,6 +19,15 @@ class User(SQLModel, table=True):
     role: str = "user"
 
 
+class UserActivity(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: Optional[int] = Field(default=None, index=True)
+    username: str
+    action: str
+    detail: str = ""
+    created_at: str
+
+
 class LoginRequest(SQLModel):
     username: str
     password: str
@@ -30,11 +39,27 @@ class RegisterRequest(SQLModel):
     password: str
 
 
+<<<<<<< Updated upstream
+=======
+class RoleUpdateRequest(SQLModel):
+    role: str
+
+
+>>>>>>> Stashed changes
 class UserRead(SQLModel):
     id: int
     username: str
     email: Optional[str] = None
     role: str
+
+
+class UserActivityRead(SQLModel):
+    id: int
+    user_id: Optional[int] = None
+    username: str
+    action: str
+    detail: str
+    created_at: str
 
 
 class TokenResponse(SQLModel):
