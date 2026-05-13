@@ -8,10 +8,16 @@ import CategoryPieChart from "./components/CategoryPieChart";
 import LoginPage from "./components/LoginPage";
 import RegisterPage from "./components/RegisterPage";
 import AdminPanel from "./components/AdminPanel";
+import logoSrc from "./assets/bubble-bill-logo.png";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 const TOKEN_STORAGE_KEY = "expenseTrackerToken";
 const USER_STORAGE_KEY = "expenseTrackerUser";
+const dashboardTabs = [
+    { key: "add", label: "Add" },
+    { key: "records", label: "Records" },
+    { key: "insights", label: "Insights" },
+];
 
 function loadStoredUser() {
     try {
@@ -30,6 +36,7 @@ function App() {
     const [currentUser, setCurrentUser] = useState(loadStoredUser);
     const [authMode, setAuthMode] = useState("login");
     const [activeView, setActiveView] = useState("dashboard");
+    const [mobileTab, setMobileTab] = useState("add");
     const [expenses, setExpenses] = useState([]);
     const [isRefreshingExpenses, setIsRefreshingExpenses] = useState(false);
     const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
@@ -83,6 +90,7 @@ function App() {
         setAuthToken(data.access_token);
         setCurrentUser(data.user);
         setActiveView("dashboard");
+        setMobileTab("add");
         localStorage.setItem(TOKEN_STORAGE_KEY, data.access_token);
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
     }
@@ -102,6 +110,7 @@ function App() {
         setAuthToken("");
         setCurrentUser(null);
         setActiveView("dashboard");
+        setMobileTab("add");
         setExpenses([]);
         setEditingExpense(null);
         localStorage.removeItem(TOKEN_STORAGE_KEY);
@@ -152,6 +161,7 @@ function App() {
             }
 
             await fetchExpenses();
+            setMobileTab("records");
         } catch (error) {
             console.error("addExpense error:", error);
             throw error;
@@ -178,6 +188,7 @@ function App() {
 
             setEditingExpense(null);
             await fetchExpenses();
+            setMobileTab("records");
         } catch (error) {
             console.error("updateExpense error:", error);
             throw error;
@@ -207,6 +218,7 @@ function App() {
         if (!expenseToEdit) return;
 
         setEditingExpense(expenseToEdit);
+        setMobileTab("add");
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
@@ -245,6 +257,7 @@ function App() {
                 <RegisterPage
                     onRegister={handleRegister}
                     onShowLogin={() => setAuthMode("login")}
+                    logoSrc={logoSrc}
                 />
             );
         }
@@ -253,6 +266,7 @@ function App() {
             <LoginPage
                 onLogin={handleLogin}
                 onShowRegister={() => setAuthMode("register")}
+                logoSrc={logoSrc}
             />
         );
     }
@@ -261,7 +275,13 @@ function App() {
         <>
             <header className="site-header">
                 <div className="header-content">
-                    <h1>Expense Tracker</h1>
+                    <div className="brand-lockup">
+                        <img src={logoSrc} alt="Bubble Bill logo" className="brand-logo" />
+                        <div>
+                            <p className="brand-kicker">Track / Manage / Save</p>
+                            <h1>Bubble Bill</h1>
+                        </div>
+                    </div>
                     <p>Track your daily spending in a smarter and cleaner way</p>
                     <div className="header-account">
                         <span>
@@ -307,114 +327,150 @@ function App() {
                 />
             ) : (
                 <main className="container dashboard-layout">
-                    <section className="card card-highlight form-card">
-                        <h2>{editingExpense ? "Edit Expense" : "Add New Expense"}</h2>
-                        <ExpenseForm
-                            key={editingExpense ? editingExpense.id : "new-expense"}
-                            onAddExpense={addExpense}
-                            onUpdateExpense={updateExpense}
-                            editingExpense={editingExpense}
-                            onFinishEdit={clearEditingExpense}
-                        />
-                    </section>
+                    <div
+                        className={`mobile-tab-panel mobile-tab-add ${
+                            mobileTab === "add" ? "is-active" : ""
+                        }`}
+                    >
+                        <section className="card card-highlight form-card">
+                            <h2>{editingExpense ? "Edit Expense" : "Add New Expense"}</h2>
+                            <ExpenseForm
+                                key={editingExpense ? editingExpense.id : "new-expense"}
+                                onAddExpense={addExpense}
+                                onUpdateExpense={updateExpense}
+                                editingExpense={editingExpense}
+                                onFinishEdit={clearEditingExpense}
+                            />
+                        </section>
+                    </div>
 
-                    <section className="card filter-card">
-                        <h2>Search & Filter</h2>
+                    <div
+                        className={`mobile-tab-panel mobile-tab-records ${
+                            mobileTab === "records" ? "is-active" : ""
+                        }`}
+                    >
+                        <section className="card filter-card">
+                            <h2>Search & Filter</h2>
 
-                        <div className="filter-grid">
-                            <div className="form-group">
-                                <label htmlFor="searchText">Search</label>
-                                <input
-                                    id="searchText"
-                                    type="text"
-                                    placeholder="Search title or description"
-                                    value={searchText}
-                                    onChange={(e) => setSearchText(e.target.value)}
-                                />
+                            <div className="filter-grid">
+                                <div className="form-group">
+                                    <label htmlFor="searchText">Search</label>
+                                    <input
+                                        id="searchText"
+                                        type="text"
+                                        placeholder="Search title or description"
+                                        value={searchText}
+                                        onChange={(e) => setSearchText(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="categoryFilter">Category</label>
+                                    <select
+                                        id="categoryFilter"
+                                        value={categoryFilter}
+                                        onChange={(e) => setCategoryFilter(e.target.value)}
+                                    >
+                                        <option value="All">All</option>
+                                        <option value="Food">Food</option>
+                                        <option value="Transport">Transport</option>
+                                        <option value="Shopping">Shopping</option>
+                                        <option value="Bills">Bills</option>
+                                        <option value="Entertainment">Entertainment</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="startDateFilter">Start Date</label>
+                                    <input
+                                        id="startDateFilter"
+                                        type="date"
+                                        value={startDateFilter}
+                                        onChange={(e) => setStartDateFilter(e.target.value)}
+                                    />
+                                </div>
+
+                                <div className="form-group">
+                                    <label htmlFor="endDateFilter">End Date</label>
+                                    <input
+                                        id="endDateFilter"
+                                        type="date"
+                                        value={endDateFilter}
+                                        onChange={(e) => setEndDateFilter(e.target.value)}
+                                    />
+                                </div>
                             </div>
 
-                            <div className="form-group">
-                                <label htmlFor="categoryFilter">Category</label>
-                                <select
-                                    id="categoryFilter"
-                                    value={categoryFilter}
-                                    onChange={(e) => setCategoryFilter(e.target.value)}
-                                >
-                                    <option value="All">All</option>
-                                    <option value="Food">Food</option>
-                                    <option value="Transport">Transport</option>
-                                    <option value="Shopping">Shopping</option>
-                                    <option value="Bills">Bills</option>
-                                    <option value="Entertainment">Entertainment</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                            </div>
+                            <button
+                                type="button"
+                                className="secondary-btn"
+                                onClick={() => {
+                                    setSearchText("");
+                                    setCategoryFilter("All");
+                                    setStartDateFilter("");
+                                    setEndDateFilter("");
+                                }}
+                            >
+                                Clear Filters
+                            </button>
+                        </section>
 
-                            <div className="form-group">
-                                <label htmlFor="startDateFilter">Start Date</label>
-                                <input
-                                    id="startDateFilter"
-                                    type="date"
-                                    value={startDateFilter}
-                                    onChange={(e) => setStartDateFilter(e.target.value)}
-                                />
-                            </div>
+                        <section className="card list-card">
+                            <h2>Expense List</h2>
+                            <ExpenseList
+                                expenses={filteredExpenses}
+                                onDeleteExpense={deleteExpense}
+                                onEditExpense={startEditExpense}
+                            />
+                        </section>
+                    </div>
 
-                            <div className="form-group">
-                                <label htmlFor="endDateFilter">End Date</label>
-                                <input
-                                    id="endDateFilter"
-                                    type="date"
-                                    value={endDateFilter}
-                                    onChange={(e) => setEndDateFilter(e.target.value)}
-                                />
-                            </div>
-                        </div>
+                    <div
+                        className={`mobile-tab-panel mobile-tab-insights ${
+                            mobileTab === "insights" ? "is-active" : ""
+                        }`}
+                    >
+                        <section className="card summary-card">
+                            <h2>Category Summary</h2>
+                            <Summary expenses={filteredExpenses} />
+                        </section>
 
-                        <button
-                            type="button"
-                            className="secondary-btn"
-                            onClick={() => {
-                                setSearchText("");
-                                setCategoryFilter("All");
-                                setStartDateFilter("");
-                                setEndDateFilter("");
-                            }}
-                        >
-                            Clear Filters
-                        </button>
-                    </section>
+                        <section className="card pie-card">
+                            <h2>Spending Share</h2>
+                            <CategoryPieChart expenses={filteredExpenses} />
+                        </section>
 
-                    <section className="card list-card">
-                        <h2>Expense List</h2>
-                        <ExpenseList
-                            expenses={filteredExpenses}
-                            onDeleteExpense={deleteExpense}
-                            onEditExpense={startEditExpense}
-                        />
-                    </section>
-
-                    <section className="card summary-card">
-                        <h2>Category Summary</h2>
-                        <Summary expenses={filteredExpenses} />
-                    </section>
-
-                    <section className="card pie-card">
-                        <h2>Spending Share</h2>
-                        <CategoryPieChart expenses={filteredExpenses} />
-                    </section>
-
-                    <section className="card trend-card">
-                        <h2>Spending Statistics</h2>
-                        <Trend
-                            expenses={filteredExpenses}
-                            onRefresh={fetchExpenses}
-                            isRefreshing={isRefreshingExpenses}
-                            lastUpdatedAt={lastUpdatedAt}
-                        />
-                    </section>
+                        <section className="card trend-card">
+                            <h2>Spending Statistics</h2>
+                            <Trend
+                                expenses={filteredExpenses}
+                                onRefresh={fetchExpenses}
+                                isRefreshing={isRefreshingExpenses}
+                                lastUpdatedAt={lastUpdatedAt}
+                            />
+                        </section>
+                    </div>
                 </main>
             )}
+
+            {activeView === "dashboard" ? (
+                <nav className="mobile-bottom-nav" aria-label="Dashboard sections">
+                    {dashboardTabs.map((tab) => (
+                        <button
+                            key={tab.key}
+                            type="button"
+                            className={`mobile-bottom-btn ${
+                                mobileTab === tab.key ? "is-active" : ""
+                            }`}
+                            onClick={() => setMobileTab(tab.key)}
+                            aria-pressed={mobileTab === tab.key}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </nav>
+            ) : null}
 
             <footer className="site-footer">
                 <p>Built with React, FastAPI and MySQL for Internet Programming practice</p>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function LoginPage({ onLogin, onShowRegister }) {
+function LoginPage({ onLogin, onShowRegister, logoSrc }) {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
@@ -27,11 +27,11 @@ function LoginPage({ onLogin, onShowRegister }) {
         <main className="auth-page">
             <section className="auth-shell">
                 <div className="auth-intro">
-                    <p className="auth-kicker">Expense Tracker</p>
+                    <img src={logoSrc} alt="Bubble Bill logo" className="auth-logo" />
+                    <p className="auth-kicker">Bubble Bill</p>
                     <h1>Welcome back</h1>
                     <p>
-                        Sign in to manage expenses, review category summaries and view
-                        spending statistics.
+                        Track, manage and save from one cleaner bill dashboard.
                     </p>
                 </div>
 

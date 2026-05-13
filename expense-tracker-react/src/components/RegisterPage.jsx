@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function RegisterPage({ onRegister, onShowLogin }) {
+function RegisterPage({ onRegister, onShowLogin, logoSrc }) {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -36,11 +36,12 @@ function RegisterPage({ onRegister, onShowLogin }) {
         <main className="auth-page">
             <section className="auth-shell">
                 <div className="auth-intro">
-                    <p className="auth-kicker">Expense Tracker</p>
+                    <img src={logoSrc} alt="Bubble Bill logo" className="auth-logo" />
+                    <p className="auth-kicker">Bubble Bill</p>
                     <h1>Create your account</h1>
                     <p>
-                        Register to save expenses, compare spending categories and access
-                        your dashboard from one secure account.
+                        Register to save expenses, compare categories and access your
+                        dashboard from one account.
                     </p>
                 </div>
 
