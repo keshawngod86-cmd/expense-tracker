@@ -279,7 +279,7 @@ def get_admin_activities(authorization: str | None = Header(default=None)):
     require_admin(authorization)
     with Session(engine) as session:
         activities = session.exec(
-            select(UserActivity).order_by(UserActivity.id.desc()).limit(100)
+            select(UserActivity).order_by(UserActivity.id.desc()).limit(500)
         ).all()
         return [to_activity_read(activity) for activity in activities]
 

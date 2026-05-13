@@ -271,7 +271,7 @@ body {
 
 .admin-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.85fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
     gap: 18px;
 }
 
@@ -303,6 +303,110 @@ body {
     font-weight: 700;
 }
 
+.admin-search-form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.admin-search-btn,
+.admin-clear-search-btn {
+    margin-top: 0;
+    min-height: 44px;
+}
+
+.admin-clear-search-btn {
+    border: 1px solid #dbe7f7;
+    background: #ffffff;
+    color: #475569;
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.admin-clear-search-btn:hover {
+    background: #f8fbff;
+}
+
+.admin-user-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    max-height: 360px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.admin-user-card {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    min-height: 72px;
+    border: 1px solid #dbe7f7;
+    border-radius: 14px;
+    background: #f8fbff;
+    color: #172033;
+    cursor: pointer;
+    padding: 10px;
+    text-align: left;
+}
+
+.admin-user-card:hover,
+.admin-user-card.is-selected {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    box-shadow: 0 10px 22px rgba(37, 99, 235, 0.12);
+}
+
+.admin-avatar {
+    display: inline-grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 0.92rem;
+    font-weight: 900;
+    letter-spacing: 0.03em;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.34);
+}
+
+.admin-avatar-large {
+    width: 58px;
+    height: 58px;
+    font-size: 1.05rem;
+}
+
+.admin-user-card-body {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.admin-user-card-body strong,
+.admin-user-card-body span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-user-card-body span {
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.admin-role-pill {
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: #075985;
+    font-size: 0.78rem;
+    font-weight: 900;
+    padding: 5px 8px;
+}
+
 .admin-table-wrapper {
     overflow-x: auto;
 }
@@ -330,13 +434,83 @@ body {
 
 .admin-self-tag {
     display: inline-block;
-    margin-left: 8px;
     border-radius: 999px;
     background: #dbeafe;
     color: #1d4ed8;
     font-size: 0.76rem;
     font-weight: 800;
     padding: 3px 8px;
+}
+
+.admin-user-card .admin-self-tag {
+    grid-column: 2 / -1;
+    justify-self: start;
+}
+
+.admin-user-detail {
+    display: grid;
+    gap: 14px;
+    margin-top: 18px;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 18px;
+}
+
+.admin-detail-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.admin-detail-heading h3 {
+    margin: 0;
+    color: #172033;
+}
+
+.admin-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.admin-detail-grid > div {
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background: #f8fbff;
+    padding: 12px;
+}
+
+.admin-detail-grid span {
+    color: #64748b;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.admin-detail-grid strong {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.admin-detail-actions {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.admin-user-records {
+    display: grid;
+    gap: 10px;
+}
+
+.admin-subheader {
+    margin-bottom: 0;
+}
+
+.user-record-item {
+    background: #ffffff;
 }
 
 .danger-outline-btn {
@@ -1195,6 +1369,58 @@ textarea {
 
     .container {
         width: min(100% - 28px, 680px);
+    }
+
+    .admin-page {
+        width: min(100% - 20px, 680px);
+        gap: 14px;
+    }
+
+    .admin-hero {
+        padding: 16px;
+    }
+
+    .admin-hero h2 {
+        font-size: 1.35rem;
+    }
+
+    .admin-panel {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .admin-search-form {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-user-list {
+        grid-template-columns: 1fr;
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
+    }
+
+    .admin-user-card {
+        grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .admin-role-pill {
+        grid-column: 2;
+        justify-self: start;
+    }
+
+    .admin-detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-detail-actions .danger-outline-btn {
+        width: 100%;
+    }
+
+    .activity-list {
+        max-height: none;
+        overflow: visible;
+        padding-right: 0;
     }
 
     .dashboard-layout {
