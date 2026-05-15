@@ -24,7 +24,7 @@ const categoryClasses = {
 const timeDimensionOptions = [
     {
         key: "daily",
-        label: "Daily Bills",
+        label: "Daily",
         chartLabel: "Daily Spending",
         chartTitle: "Daily Expense Overview",
         xAxisTitle: "Date",
@@ -32,7 +32,7 @@ const timeDimensionOptions = [
     },
     {
         key: "monthly",
-        label: "Monthly Bills",
+        label: "Monthly",
         chartLabel: "Monthly Spending",
         chartTitle: "Monthly Expense Overview",
         xAxisTitle: "Month",
@@ -40,7 +40,7 @@ const timeDimensionOptions = [
     },
     {
         key: "yearly",
-        label: "Annual Bills",
+        label: "Annual",
         chartLabel: "Annual Spending",
         chartTitle: "Annual Expense Overview",
         xAxisTitle: "Year",
@@ -163,10 +163,10 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
         },
         plugins: {
             legend: {
-                display: true,
+                display: false,
             },
             title: {
-                display: true,
+                display: false,
                 text: activeOption.chartTitle,
             },
             tooltip: {
@@ -188,7 +188,7 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
             },
             x: {
                 title: {
-                    display: true,
+                    display: false,
                     text: activeOption.xAxisTitle,
                 },
             },
@@ -201,6 +201,10 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
               minute: "2-digit",
           })
         : "Not refreshed yet";
+
+    const totalForActiveRange = periodValues.reduce((total, value) => total + value, 0);
+    const averageForActiveRange =
+        periodValues.length > 0 ? totalForActiveRange / periodValues.length : 0;
 
     function handleDimensionChange(nextDimension) {
         setTimeDimension(nextDimension);
@@ -239,21 +243,35 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
                 </div>
             </div>
 
+            <div className="trend-quick-stats" aria-label="Spending statistics summary">
+                <div className="trend-stat-chip trend-stat-total">
+                    <span>Total</span>
+                    <strong>{formatCurrency(totalForActiveRange)}</strong>
+                </div>
+                <div className="trend-stat-chip trend-stat-periods">
+                    <span>{activeOption.xAxisTitle}s</span>
+                    <strong>{periodLabels.length}</strong>
+                </div>
+                <div className="trend-stat-chip trend-stat-average">
+                    <span>Average</span>
+                    <strong>{formatCurrency(averageForActiveRange)}</strong>
+                </div>
+            </div>
+
             {periodLabels.length === 0 ? (
                 <div className="trend-box">
                     <p>No data yet.</p>
                 </div>
             ) : (
                 <>
-                    <div className="trend-header-row">
-                        <p className="trend-helper-text">
-                            Switch between daily, monthly and annual bills. Click a bar to
-                            inspect the matching records.
-                        </p>
-                    </div>
-
-                    <div className="chart-wrapper large-chart">
-                        <Bar data={barData} options={barOptions} />
+                    <div className="trend-visual-panel">
+                        <div className="trend-chart-title">
+                            <span>{activeOption.chartTitle}</span>
+                            <strong>Tap a bar</strong>
+                        </div>
+                        <div className="chart-wrapper large-chart">
+                            <Bar data={barData} options={barOptions} />
+                        </div>
                     </div>
 
                     {selectedPeriod ? (

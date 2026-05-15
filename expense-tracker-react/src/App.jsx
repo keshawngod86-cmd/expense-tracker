@@ -9,7 +9,17 @@ import RegisterPage from "./components/RegisterPage";
 import AdminPanel from "./components/AdminPanel";
 import logoSrc from "./assets/bubble-bill-logo.png";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+function getDefaultApiBaseUrl() {
+    const hostname = window.location.hostname;
+
+    if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
+        return `${window.location.protocol}//${hostname}:8001`;
+    }
+
+    return "http://127.0.0.1:8000";
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || getDefaultApiBaseUrl();
 const TOKEN_STORAGE_KEY = "expenseTrackerToken";
 const USER_STORAGE_KEY = "expenseTrackerUser";
 const dashboardTabs = [
@@ -283,9 +293,12 @@ function App() {
                     </div>
                     <p>Track your daily spending in a smarter and cleaner way</p>
                     <div className="header-account">
-                        <span>
-                            Signed in as <strong>{currentUser.username}</strong>
-                            {canViewAdmin ? " (admin)" : ""}
+                        <span className="account-status">
+                            <span className="account-prefix">Signed in as</span>
+                            <strong>{currentUser.username}</strong>
+                            {canViewAdmin ? (
+                                <span className="account-role">admin</span>
+                            ) : null}
                         </span>
                         <button
                             type="button"

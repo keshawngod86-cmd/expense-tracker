@@ -55,14 +55,15 @@ function CategoryPieChart({ expenses }) {
 
     if (categoryRows.length === 0 || totalSpending === 0) {
         return (
-            <>
+            <div className="pie-content">
                 <p className="pie-total-spending">
-                    Total Spending: <strong>{formatCurrency(0)}</strong>
+                    <span>Total Spending</span>
+                    <strong>{formatCurrency(0)}</strong>
                 </p>
                 <div className="pie-empty-state">
                     <p>No spending data yet.</p>
                 </div>
-            </>
+            </div>
         );
     }
 
@@ -88,11 +89,7 @@ function CategoryPieChart({ expenses }) {
         maintainAspectRatio: false,
         plugins: {
             legend: {
-                position: "bottom",
-                labels: {
-                    boxWidth: 14,
-                    padding: 16,
-                },
+                display: false,
             },
             tooltip: {
                 callbacks: {
@@ -107,9 +104,10 @@ function CategoryPieChart({ expenses }) {
     };
 
     return (
-        <>
+        <div className="pie-content">
             <p className="pie-total-spending">
-                Total Spending: <strong>{formatCurrency(totalSpending)}</strong>
+                <span>Total Spending</span>
+                <strong>{formatCurrency(totalSpending)}</strong>
             </p>
             <div className="pie-chart-section">
                 <div className="pie-chart-wrapper">
@@ -139,7 +137,7 @@ function CategoryPieChart({ expenses }) {
                     })}
                 </div>
             </div>
-        </>
+        </div>
     );
 }
 
