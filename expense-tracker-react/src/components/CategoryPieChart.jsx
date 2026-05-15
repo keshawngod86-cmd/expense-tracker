@@ -55,9 +55,14 @@ function CategoryPieChart({ expenses }) {
 
     if (categoryRows.length === 0 || totalSpending === 0) {
         return (
-            <div className="pie-empty-state">
-                <p>No spending data yet.</p>
-            </div>
+            <>
+                <p className="pie-total-spending">
+                    Total Spending: <strong>{formatCurrency(0)}</strong>
+                </p>
+                <div className="pie-empty-state">
+                    <p>No spending data yet.</p>
+                </div>
+            </>
         );
     }
 
@@ -102,34 +107,39 @@ function CategoryPieChart({ expenses }) {
     };
 
     return (
-        <div className="pie-chart-section">
-            <div className="pie-chart-wrapper">
-                <Pie data={pieData} options={pieOptions} />
-            </div>
+        <>
+            <p className="pie-total-spending">
+                Total Spending: <strong>{formatCurrency(totalSpending)}</strong>
+            </p>
+            <div className="pie-chart-section">
+                <div className="pie-chart-wrapper">
+                    <Pie data={pieData} options={pieOptions} />
+                </div>
 
-            <div className="pie-breakdown-list" aria-label="Spending share by category">
-                {categoryRows.map(([category, amount]) => {
-                    const percentage = ((amount / totalSpending) * 100).toFixed(1);
-                    const color = categoryColors[category] || categoryColors.Other;
+                <div className="pie-breakdown-list" aria-label="Spending share by category">
+                    {categoryRows.map(([category, amount]) => {
+                        const percentage = ((amount / totalSpending) * 100).toFixed(1);
+                        const color = categoryColors[category] || categoryColors.Other;
 
-                    return (
-                        <div className="pie-breakdown-row" key={category}>
-                            <span className="pie-category-label">
-                                <span
-                                    className="pie-color-swatch"
-                                    style={{ backgroundColor: color }}
-                                    aria-hidden="true"
-                                />
-                                {category}
-                            </span>
-                            <span className="pie-category-value">
-                                {formatCurrency(amount)} ({percentage}%)
-                            </span>
-                        </div>
-                    );
-                })}
+                        return (
+                            <div className="pie-breakdown-row" key={category}>
+                                <span className="pie-category-label">
+                                    <span
+                                        className="pie-color-swatch"
+                                        style={{ backgroundColor: color }}
+                                        aria-hidden="true"
+                                    />
+                                    {category}
+                                </span>
+                                <span className="pie-category-value">
+                                    {formatCurrency(amount)} ({percentage}%)
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

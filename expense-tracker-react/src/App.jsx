@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import ExpenseForm from "./components/ExpenseForm";
 import ExpenseList from "./components/ExpenseList";
-import Summary from "./components/Summary";
 import Trend from "./components/Trend";
 import CategoryPieChart from "./components/CategoryPieChart";
 import LoginPage from "./components/LoginPage";
@@ -431,11 +430,6 @@ function App() {
                             mobileTab === "insights" ? "is-active" : ""
                         }`}
                     >
-                        <section className="card summary-card">
-                            <h2>Category Summary</h2>
-                            <Summary expenses={filteredExpenses} />
-                        </section>
-
                         <section className="card pie-card">
                             <h2>Spending Share</h2>
                             <CategoryPieChart expenses={filteredExpenses} />
