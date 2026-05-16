@@ -1,12 +1,11 @@
-﻿# Upload 02 - Backend MySQL User Isolation
+﻿# Upload 03 - Seed Data and Cross-Platform Startup
 
-Adds the final backend database structure, user-specific expense ownership, timestamps, admin-safe user detail APIs, and migration support.
+Adds seed data tooling and replaces Windows-only one-click startup with normal backend/frontend commands for Windows and macOS teammates.
 
 ## Main changes
-- Expenses are scoped to the logged-in user.
-- Admin can request a selected user expenses and activity.
-- MySQL setup script now creates the user, expense, and activity tables.
-- Existing tables can be migrated at backend startup.
+- Adds seed_user_expenses.py to regenerate 100 expenses per user.
+- README explains manual backend and frontend startup.
+- Windows-only batch startup files are removed from this simulated upload.
 
 ## Run
 Backend: cd expense-tracker-backend; python -m venv .venv; activate it; python -m pip install -r requirements.txt; python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
