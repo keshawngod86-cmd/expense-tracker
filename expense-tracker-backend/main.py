@@ -1,7 +1,6 @@
-from datetime import datetime, timezone
-
 from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import or_
 from sqlmodel import Session, select
 
 from auth import create_access_token, decode_access_token, hash_password, verify_password
@@ -16,6 +15,7 @@ from models import (
     UserActivity,
     UserActivityRead,
     UserRead,
+    utc_timestamp,
 )
 
 app = FastAPI()
@@ -43,6 +43,7 @@ def to_user_read(user: User) -> UserRead:
         username=user.username,
         email=user.email,
         role=user.role,
+        created_at=user.created_at or "",
     )
 
 
@@ -69,7 +70,7 @@ def log_activity(
         username=user.username if user else username or "anonymous",
         action=action,
         detail=detail,
-        created_at=datetime.now(timezone.utc).isoformat(),
+        created_at=utc_timestamp(),
     )
     session.add(activity)
 
@@ -263,12 +264,19 @@ def delete_user(user_id: int, authorization: str | None = Header(default=None)):
             raise HTTPException(status_code=404, detail="User not found")
 
         deleted_username = target_user.username
+        user_expenses = session.exec(
+            select(Expense).where(Expense.user_id == target_user.id)
+        ).all()
+
+        for expense in user_expenses:
+            session.delete(expense)
+
         session.delete(target_user)
         log_activity(
             session,
             session.get(User, admin_user.id),
             "admin_delete_user",
-            f"Deleted user {deleted_username}",
+            f"Deleted user {deleted_username} and {len(user_expenses)} expenses",
         )
         session.commit()
         return {"message": "User deleted successfully"}
@@ -284,18 +292,70 @@ def get_admin_activities(authorization: str | None = Header(default=None)):
         return [to_activity_read(activity) for activity in activities]
 
 
-@app.get("/expenses")
-def get_expenses():
+@app.get("/admin/users/{user_id}/activities", response_model=list[UserActivityRead])
+def get_admin_user_activities(
+    user_id: int,
+    authorization: str | None = Header(default=None),
+):
+    require_admin(authorization)
     with Session(engine) as session:
-        statement = select(Expense)
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        activities = session.exec(
+            select(UserActivity)
+            .where(
+                or_(
+                    UserActivity.user_id == user_id,
+                    UserActivity.username == user.username,
+                )
+            )
+            .order_by(UserActivity.id.desc())
+            .limit(300)
+        ).all()
+        return [to_activity_read(activity) for activity in activities]
+
+
+@app.get("/admin/users/{user_id}/expenses", response_model=list[Expense])
+def get_admin_user_expenses(
+    user_id: int,
+    authorization: str | None = Header(default=None),
+):
+    require_admin(authorization)
+    with Session(engine) as session:
+        user = session.get(User, user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        statement = (
+            select(Expense)
+            .where(Expense.user_id == user_id)
+            .order_by(Expense.created_at.desc())
+        )
+        return session.exec(statement).all()
+
+
+@app.get("/expenses", response_model=list[Expense])
+def get_expenses(authorization: str | None = Header(default=None)):
+    user = get_current_user(authorization)
+    with Session(engine) as session:
+        statement = select(Expense).where(Expense.user_id == user.id)
         expenses = session.exec(statement).all()
         return expenses
 
 @app.post("/expenses")
 def create_expense(expense: Expense, authorization: str | None = Header(default=None)):
+    user = get_current_user(authorization)
     with Session(engine) as session:
+        now = utc_timestamp()
+
+        expense.user_id = user.id if user else None
+        expense.username = user.username if user else "anonymous"
+        expense.created_at = now
+        expense.updated_at = now
+
         session.add(expense)
-        user = get_optional_user(authorization)
         log_activity(
             session,
             user,
@@ -308,13 +368,16 @@ def create_expense(expense: Expense, authorization: str | None = Header(default=
 
 @app.delete("/expenses/{expense_id}")
 def delete_expense(expense_id: str, authorization: str | None = Header(default=None)):
+    user = get_current_user(authorization)
     with Session(engine) as session:
         expense = session.get(Expense, expense_id)
 
         if not expense:
             raise HTTPException(status_code=404, detail="Expense not found")
 
-        user = get_optional_user(authorization)
+        if expense.user_id != user.id:
+            raise HTTPException(status_code=404, detail="Expense not found")
+
         log_activity(
             session,
             user,
@@ -331,10 +394,14 @@ def update_expense(
     updated_expense: Expense,
     authorization: str | None = Header(default=None),
 ):
+    user = get_current_user(authorization)
     with Session(engine) as session:
         expense = session.get(Expense, expense_id)
 
         if not expense:
+            raise HTTPException(status_code=404, detail="Expense not found")
+
+        if expense.user_id != user.id:
             raise HTTPException(status_code=404, detail="Expense not found")
 
         expense.title = updated_expense.title
@@ -343,7 +410,17 @@ def update_expense(
         expense.date = updated_expense.date
         expense.description = updated_expense.description
 
-        user = get_optional_user(authorization)
+        now = utc_timestamp()
+
+        if not expense.created_at:
+            expense.created_at = now
+
+        if not expense.username:
+            expense.user_id = user.id if user else None
+            expense.username = user.username if user else "anonymous"
+
+        expense.updated_at = now
+
         session.add(expense)
         log_activity(
             session,

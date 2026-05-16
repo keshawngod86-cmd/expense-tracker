@@ -1,5 +1,10 @@
+from datetime import datetime, timezone
 from typing import Optional
 from sqlmodel import SQLModel, Field
+
+
+def utc_timestamp() -> str:
+    return datetime.now(timezone.utc).isoformat()
 
 
 class Expense(SQLModel, table=True):
@@ -9,6 +14,10 @@ class Expense(SQLModel, table=True):
     amount: float
     date: str
     description: Optional[str] = ""
+    user_id: Optional[int] = Field(default=None, index=True)
+    username: Optional[str] = Field(default=None, index=True)
+    created_at: str = Field(default_factory=utc_timestamp)
+    updated_at: str = Field(default_factory=utc_timestamp)
 
 
 class User(SQLModel, table=True):
@@ -17,6 +26,7 @@ class User(SQLModel, table=True):
     email: Optional[str] = None
     password_hash: str
     role: str = "user"
+    created_at: str = Field(default_factory=utc_timestamp)
 
 
 class UserActivity(SQLModel, table=True):
@@ -25,7 +35,7 @@ class UserActivity(SQLModel, table=True):
     username: str
     action: str
     detail: str = ""
-    created_at: str
+    created_at: str = Field(default_factory=utc_timestamp)
 
 
 class LoginRequest(SQLModel):
@@ -48,6 +58,7 @@ class UserRead(SQLModel):
     username: str
     email: Optional[str] = None
     role: str
+    created_at: str = ""
 
 
 class UserActivityRead(SQLModel):
