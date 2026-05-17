@@ -11,6 +11,20 @@ function formatDateTime(value) {
     return date.toLocaleString();
 }
 
+function formatCurrency(value) {
+    return Number(value || 0).toLocaleString(undefined, {
+        style: "currency",
+        currency: "USD",
+    });
+}
+
+function formatAction(action) {
+    return action
+        .split("_")
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(" ");
+}
+
 function getInitials(username) {
     return username
         .split(/\s+/)
@@ -32,13 +46,15 @@ function getAvatarStyle(username) {
 
 function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
     const [users, setUsers] = useState([]);
-    const [activities, setActivities] = useState([]);
+    const [userDetailsById, setUserDetailsById] = useState({});
     const [selectedUserId, setSelectedUserId] = useState(null);
     const [searchText, setSearchText] = useState("");
     const [activeSearchText, setActiveSearchText] = useState("");
     const [isLoading, setIsLoading] = useState(false);
+    const [loadingUserId, setLoadingUserId] = useState(null);
     const [message, setMessage] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [mobileDetailTab, setMobileDetailTab] = useState("records");
 
     const authHeaders = useCallback(
         () => ({
@@ -53,26 +69,17 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
         setErrorMessage("");
 
         try {
-            const [usersResponse, activitiesResponse] = await Promise.all([
-                fetch(`${apiBaseUrl}/admin/users`, {
-                    headers: authHeaders(),
-                }),
-                fetch(`${apiBaseUrl}/admin/activities`, {
-                    headers: authHeaders(),
-                }),
-            ]);
+            const usersResponse = await fetch(`${apiBaseUrl}/admin/users`, {
+                headers: authHeaders(),
+            });
 
-            if (!usersResponse.ok || !activitiesResponse.ok) {
+            if (!usersResponse.ok) {
                 throw new Error("Failed to load admin data.");
             }
 
-            const [usersData, activitiesData] = await Promise.all([
-                usersResponse.json(),
-                activitiesResponse.json(),
-            ]);
+            const usersData = await usersResponse.json();
 
             setUsers(usersData);
-            setActivities(activitiesData);
             setSelectedUserId((existingId) => {
                 if (usersData.some((user) => user.id === existingId)) {
                     return existingId;
@@ -95,6 +102,71 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
         return users.find((user) => user.id === selectedUserId) || users[0] || null;
     }, [users, selectedUserId]);
 
+    const selectedUserDetails = selectedUser
+        ? userDetailsById[selectedUser.id]
+        : null;
+    const selectedUserExpenses = selectedUserDetails?.expenses || [];
+    const selectedUserActivities = selectedUserDetails?.activities || [];
+    const isLoadingSelectedUser = selectedUser?.id === loadingUserId;
+
+    useEffect(() => {
+        let shouldIgnore = false;
+
+        async function loadSelectedUserDetails() {
+            if (!selectedUser) {
+                return;
+            }
+
+            setLoadingUserId(selectedUser.id);
+
+            try {
+                const [expensesResponse, activitiesResponse] = await Promise.all([
+                    fetch(`${apiBaseUrl}/admin/users/${selectedUser.id}/expenses`, {
+                        headers: authHeaders(),
+                    }),
+                    fetch(`${apiBaseUrl}/admin/users/${selectedUser.id}/activities`, {
+                        headers: authHeaders(),
+                    }),
+                ]);
+
+                if (!expensesResponse.ok || !activitiesResponse.ok) {
+                    throw new Error("Failed to load selected user details.");
+                }
+
+                const [expenses, activities] = await Promise.all([
+                    expensesResponse.json(),
+                    activitiesResponse.json(),
+                ]);
+
+                if (!shouldIgnore) {
+                    setUserDetailsById((existingDetails) => ({
+                        ...existingDetails,
+                        [selectedUser.id]: {
+                            expenses,
+                            activities,
+                        },
+                    }));
+                }
+            } catch (error) {
+                if (!shouldIgnore) {
+                    setErrorMessage(
+                        error.message || "Failed to load selected user details."
+                    );
+                }
+            } finally {
+                if (!shouldIgnore) {
+                    setLoadingUserId(null);
+                }
+            }
+        }
+
+        loadSelectedUserDetails();
+
+        return () => {
+            shouldIgnore = true;
+        };
+    }, [apiBaseUrl, authHeaders, selectedUser]);
+
     const filteredUsers = useMemo(() => {
         const search = activeSearchText.trim().toLowerCase();
         if (!search) return users;
@@ -107,23 +179,6 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
             );
         });
     }, [users, activeSearchText]);
-
-    const selectedUserActivities = useMemo(() => {
-        if (!selectedUser) return [];
-
-        return activities.filter((activity) => {
-            return (
-                activity.user_id === selectedUser.id ||
-                (!activity.user_id && activity.username === selectedUser.username)
-            );
-        });
-    }, [activities, selectedUser]);
-
-    const selectedUserCreatedRecords = useMemo(() => {
-        return selectedUserActivities.filter(
-            (activity) => activity.action === "create_expense"
-        );
-    }, [selectedUserActivities]);
 
     function handleSearchSubmit(event) {
         event.preventDefault();
@@ -209,7 +264,7 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
             {errorMessage ? <p className="admin-error">{errorMessage}</p> : null}
 
             <section className="admin-layout">
-                <div className="admin-panel">
+                <div className="admin-panel admin-users-panel">
                     <div className="admin-panel-header">
                         <h3>User List</h3>
                         <span>{filteredUsers.length} shown</span>
@@ -252,7 +307,10 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
                                         className={`admin-user-card ${
                                             isSelected ? "is-selected" : ""
                                         }`}
-                                        onClick={() => setSelectedUserId(user.id)}
+                                        onClick={() => {
+                                            setSelectedUserId(user.id);
+                                            setMobileDetailTab("records");
+                                        }}
                                     >
                                         <span
                                             className="admin-avatar"
@@ -273,9 +331,11 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
                             })
                         )}
                     </div>
+                </div>
 
+                <div className="admin-panel admin-detail-panel">
                     {selectedUser ? (
-                        <section className="admin-user-detail">
+                        <>
                             <div className="admin-detail-heading">
                                 <span
                                     className="admin-avatar admin-avatar-large"
@@ -286,6 +346,11 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
                                 <div>
                                     <p className="admin-kicker">Selected User</p>
                                     <h3>{selectedUser.username}</h3>
+                                    {isLoadingSelectedUser ? (
+                                        <span className="admin-inline-loading">
+                                            Updating records...
+                                        </span>
+                                    ) : null}
                                 </div>
                             </div>
 
@@ -327,62 +392,122 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
                                 </button>
                             </div>
 
-                            <div className="admin-user-records">
-                                <div className="admin-panel-header admin-subheader">
-                                    <h3>Added Information</h3>
-                                    <span>{selectedUserCreatedRecords.length} records</span>
-                                </div>
-
-                                {selectedUserCreatedRecords.length === 0 ? (
-                                    <p className="admin-empty-text">
-                                        No added expense records for this user yet.
-                                    </p>
-                                ) : (
-                                    selectedUserCreatedRecords.map((activity) => (
-                                        <article
-                                            className="activity-item user-record-item"
-                                            key={activity.id}
-                                        >
-                                            <div>
-                                                <strong>{activity.detail || "Added expense"}</strong>
-                                                <p>Action: {activity.action}</p>
-                                            </div>
-                                            <div className="activity-meta">
-                                                <span>{activity.username}</span>
-                                                <time>{formatDateTime(activity.created_at)}</time>
-                                            </div>
-                                        </article>
-                                    ))
-                                )}
+                            <div
+                                className="admin-mobile-detail-tabs"
+                                aria-label="Selected user sections"
+                            >
+                                <button
+                                    type="button"
+                                    className={mobileDetailTab === "records" ? "is-active" : ""}
+                                    aria-pressed={mobileDetailTab === "records"}
+                                    onClick={() => setMobileDetailTab("records")}
+                                >
+                                    Added
+                                </button>
+                                <button
+                                    type="button"
+                                    className={mobileDetailTab === "activity" ? "is-active" : ""}
+                                    aria-pressed={mobileDetailTab === "activity"}
+                                    onClick={() => setMobileDetailTab("activity")}
+                                >
+                                    Activity
+                                </button>
                             </div>
-                        </section>
-                    ) : null}
-                </div>
 
-                <div className="admin-panel">
-                    <div className="admin-panel-header">
-                        <h3>Recent Activity</h3>
-                        <span>Latest 500</span>
-                    </div>
+                            <div
+                                className={`admin-selected-content admin-mobile-tab-${mobileDetailTab}`}
+                            >
+                                <section className="admin-user-records">
+                                    <div className="admin-panel-header admin-subheader">
+                                        <h3>Added Information</h3>
+                                        <span>{selectedUserExpenses.length} records</span>
+                                    </div>
 
-                    <div className="activity-list">
-                        {activities.length === 0 ? (
-                            <p className="admin-empty-text">No activity recorded yet.</p>
-                        ) : (
-                            activities.map((activity) => (
-                                <article className="activity-item" key={activity.id}>
-                                    <div>
-                                        <strong>{activity.action}</strong>
-                                        <p>{activity.detail || "No detail"}</p>
+                                    {!selectedUserDetails && isLoadingSelectedUser ? (
+                                        <p className="admin-empty-text">
+                                            Loading this user's expense records...
+                                        </p>
+                                    ) : selectedUserExpenses.length === 0 ? (
+                                        <p className="admin-empty-text">
+                                            No added expense records for this user yet.
+                                        </p>
+                                    ) : (
+                                        selectedUserExpenses.map((expense) => (
+                                            <article
+                                                className="activity-item user-record-item"
+                                                key={expense.id}
+                                            >
+                                                <div>
+                                                    <strong>
+                                                        {expense.title} -{" "}
+                                                        {formatCurrency(expense.amount)}
+                                                    </strong>
+                                                    <p>
+                                                        {expense.category} on {expense.date}
+                                                        {expense.description
+                                                            ? ` - ${expense.description}`
+                                                            : ""}
+                                                    </p>
+                                                </div>
+                                                <div className="activity-meta">
+                                                    <span>
+                                                        {expense.username ||
+                                                            selectedUser.username}
+                                                    </span>
+                                                    <time>
+                                                        {formatDateTime(expense.created_at)}
+                                                    </time>
+                                                </div>
+                                            </article>
+                                        ))
+                                    )}
+                                </section>
+
+                                <section className="admin-user-activity">
+                                    <div className="admin-panel-header admin-subheader">
+                                        <h3>User Activity</h3>
+                                        <span>{selectedUserActivities.length} events</span>
                                     </div>
-                                    <div className="activity-meta">
-                                        <span>{activity.username}</span>
-                                        <time>{formatDateTime(activity.created_at)}</time>
-                                    </div>
-                                </article>
-                            ))
-                        )}
-                    </div>
+
+                                    {!selectedUserDetails && isLoadingSelectedUser ? (
+                                        <p className="admin-empty-text">
+                                            Loading this user's activity...
+                                        </p>
+                                    ) : selectedUserActivities.length === 0 ? (
+                                        <p className="admin-empty-text">
+                                            No activity recorded for this user yet.
+                                        </p>
+                                    ) : (
+                                        <div className="activity-list user-activity-list">
+                                            {selectedUserActivities.map((activity) => (
+                                                <article
+                                                    className="activity-item"
+                                                    key={activity.id}
+                                                >
+                                                    <div>
+                                                        <strong>
+                                                            {formatAction(activity.action)}
+                                                        </strong>
+                                                        <p>{activity.detail || "No detail"}</p>
+                                                    </div>
+                                                    <div className="activity-meta">
+                                                        <span>{activity.username}</span>
+                                                        <time>
+                                                            {formatDateTime(
+                                                                activity.created_at
+                                                            )}
+                                                        </time>
+                                                    </div>
+                                                </article>
+                                            ))}
+                                        </div>
+                                    )}
+                                </section>
+                            </div>
+                        </>
+                    ) : (
+                        <p className="admin-empty-text">Select a user to review details.</p>
+                    )}
                 </div>
             </section>
         </main>

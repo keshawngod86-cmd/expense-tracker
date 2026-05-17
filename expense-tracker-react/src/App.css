@@ -331,8 +331,9 @@ body {
 
 .admin-layout {
     display: grid;
-    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
     gap: 18px;
+    align-items: start;
 }
 
 .admin-panel {
@@ -342,6 +343,18 @@ body {
     border-radius: 16px;
     padding: clamp(16px, 2vw, 20px);
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+}
+
+.admin-users-panel {
+    position: sticky;
+    top: 16px;
+}
+
+.admin-detail-panel {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+    min-height: 560px;
 }
 
 .admin-panel-header {
@@ -389,9 +402,9 @@ body {
 
 .admin-user-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    grid-template-columns: 1fr;
     gap: 12px;
-    max-height: 360px;
+    max-height: min(70vh, 760px);
     overflow-y: auto;
     padding-right: 4px;
 }
@@ -518,11 +531,20 @@ body {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-height: 64px;
 }
 
 .admin-detail-heading h3 {
     margin: 0;
     color: #172033;
+}
+
+.admin-inline-loading {
+    display: inline-block;
+    margin-top: 4px;
+    color: #2563eb;
+    font-size: 0.78rem;
+    font-weight: 800;
 }
 
 .admin-detail-grid {
@@ -562,6 +584,23 @@ body {
 .admin-user-records {
     display: grid;
     gap: 10px;
+    align-content: start;
+    max-height: min(58vh, 560px);
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.admin-user-activity {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+}
+
+.admin-selected-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+    gap: 14px;
+    align-items: start;
 }
 
 .admin-subheader {
@@ -623,6 +662,10 @@ body {
     padding-right: 4px;
 }
 
+.user-activity-list {
+    max-height: min(58vh, 560px);
+}
+
 .activity-item {
     display: grid;
     gap: 8px;
@@ -674,8 +717,7 @@ body {
 .form-card {
     grid-column: 1;
     grid-row: span 2;
-    position: sticky;
-    top: 18px;
+    position: static;
 }
 
 .filter-card,
@@ -913,18 +955,23 @@ textarea {
     color: #374151;
 }
 
+.pie-content {
+    display: grid;
+    gap: 16px;
+}
+
 .pie-chart-section {
     display: grid;
-    grid-template-columns: minmax(220px, 0.9fr) minmax(220px, 1.1fr);
-    gap: 18px;
-    align-items: center;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    align-items: stretch;
 }
 
 .pie-total-spending {
     display: flex;
     justify-content: space-between;
     gap: 12px;
-    margin: 0 0 16px;
+    margin: 0;
     border: 1px solid #dbe7f7;
     border-radius: 12px;
     background: #f8fbff;
@@ -939,8 +986,10 @@ textarea {
 }
 
 .pie-chart-wrapper {
-    height: 260px;
+    width: min(100%, 280px);
+    height: 250px;
     min-width: 0;
+    margin: 0 auto;
 }
 
 .pie-empty-state {
@@ -951,20 +1000,21 @@ textarea {
 }
 
 .pie-breakdown-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
     min-width: 0;
 }
 
 .pie-breakdown-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
-    justify-content: space-between;
     gap: 12px;
+    min-height: 48px;
     border: 1px solid #e2e8f0;
     border-radius: 12px;
-    padding: 10px 12px;
+    padding: 9px 11px;
     background: #f8fbff;
 }
 
@@ -974,6 +1024,14 @@ textarea {
     gap: 8px;
     min-width: 0;
     font-weight: 700;
+    color: #172033;
+}
+
+.pie-category-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .pie-color-swatch {
@@ -986,7 +1044,10 @@ textarea {
 .pie-category-value {
     color: #475569;
     font-weight: 700;
+    justify-self: end;
+    text-align: right;
     white-space: nowrap;
+    font-size: 0.92rem;
 }
 
 .chart-wrapper {
@@ -1166,6 +1227,77 @@ textarea {
 .trend-stat-average {
     background: #fff7ed;
     border-color: #fed7aa;
+}
+
+.trend-period-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+    scrollbar-width: thin;
+}
+
+.trend-period-pill {
+    display: grid;
+    gap: 3px;
+    min-width: 118px;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    background: #ffffff;
+    color: #172033;
+    cursor: pointer;
+    padding: 9px 11px;
+    text-align: left;
+}
+
+.trend-period-pill span {
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 900;
+}
+
+.trend-period-pill strong {
+    color: #172033;
+    font-size: 0.92rem;
+}
+
+.trend-period-pill.is-active {
+    border-color: #f97316;
+    background: #fff7ed;
+    box-shadow: inset 0 0 0 1px rgba(249, 115, 22, 0.14);
+}
+
+.trend-selected-summary {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #fed7aa;
+    border-radius: 14px;
+    background: #fff7ed;
+    padding: 10px 12px;
+}
+
+.trend-selected-summary span {
+    color: #9a3412;
+    font-size: 0.76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.trend-selected-summary strong {
+    min-width: 0;
+    color: #172033;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.trend-selected-summary em {
+    color: #9a3412;
+    font-style: normal;
+    font-weight: 800;
+    white-space: nowrap;
 }
 
 .trend-visual-panel {
@@ -1371,6 +1503,18 @@ textarea {
 
 @media (max-width: 1024px) {
     .admin-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-users-panel {
+        position: static;
+    }
+
+    .admin-detail-panel {
+        min-height: auto;
+    }
+
+    .admin-selected-content {
         grid-template-columns: 1fr;
     }
 
@@ -1700,6 +1844,10 @@ textarea {
         max-height: min(34svh, 320px);
         overflow-y: auto;
         padding-right: 2px;
+    }
+
+    .user-activity-list {
+        max-height: min(34svh, 320px);
     }
 
     .pie-total-spending,
@@ -2307,7 +2455,8 @@ textarea {
 
     .admin-user-list,
     .activity-list,
-    .admin-user-records {
+    .admin-user-records,
+    .admin-user-activity {
         gap: 6px;
     }
 
@@ -2341,10 +2490,9 @@ textarea {
         font-size: 0.66rem;
     }
 
-    .admin-user-detail {
+    .admin-detail-panel,
+    .admin-selected-content {
         gap: 8px;
-        margin-top: 10px;
-        padding-top: 10px;
     }
 
     .admin-detail-grid {
@@ -3278,5 +3426,1585 @@ textarea {
 
     .trend-stat-chip strong {
         font-size: 0.66rem !important;
+    }
+}
+
+/* Mobile Insights redesign: clearer statistics controls and details. */
+@media (max-width: 768px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: 154px minmax(0, 1fr) !important;
+        gap: 8px !important;
+    }
+
+    .pie-card {
+        min-height: 0 !important;
+    }
+
+    .pie-card .pie-content {
+        gap: 5px !important;
+        height: 100% !important;
+    }
+
+    .pie-card .pie-total-spending {
+        min-height: 30px !important;
+        margin: 0 !important;
+        padding: 5px 8px !important;
+    }
+
+    .pie-card .pie-chart-section {
+        grid-template-columns: 118px minmax(0, 1fr) !important;
+        gap: 8px !important;
+        align-items: center !important;
+    }
+
+    .pie-card .pie-chart-wrapper {
+        width: 112px !important;
+        height: 96px !important;
+        margin: 0 !important;
+    }
+
+    .pie-card .pie-breakdown-list {
+        gap: 4px !important;
+        max-height: 96px !important;
+        overflow-y: auto !important;
+    }
+
+    .pie-card .pie-breakdown-row {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        min-height: 24px !important;
+        gap: 6px !important;
+        padding: 4px 6px !important;
+    }
+
+    .trend-card {
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .trend-chart-section {
+        display: grid !important;
+        grid-template-rows: auto auto auto auto minmax(0, 1fr) !important;
+        gap: 7px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow-y: auto !important;
+        padding-right: 2px !important;
+    }
+
+    .trend-toolbar {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 5px !important;
+        border: 0 !important;
+        background: transparent !important;
+        padding: 0 !important;
+    }
+
+    .time-toggle-group {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+        padding: 4px !important;
+    }
+
+    .time-toggle-btn {
+        min-height: 30px !important;
+        padding: 5px 4px !important;
+        font-size: 0.68rem !important;
+    }
+
+    .refresh-panel {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        gap: 6px !important;
+        align-items: center !important;
+        padding: 5px 6px !important;
+    }
+
+    .refresh-btn {
+        min-height: 28px !important;
+        padding-inline: 10px !important;
+    }
+
+    .trend-quick-stats {
+        grid-template-columns: 1.12fr 0.78fr 1fr !important;
+        gap: 6px !important;
+    }
+
+    .trend-stat-chip {
+        min-height: 52px !important;
+        padding: 7px 8px !important;
+    }
+
+    .trend-stat-chip span {
+        font-size: 0.58rem !important;
+    }
+
+    .trend-stat-chip strong {
+        font-size: 0.76rem !important;
+    }
+
+    .trend-period-strip {
+        gap: 6px !important;
+        overflow-x: auto !important;
+        padding-bottom: 1px !important;
+    }
+
+    .trend-period-pill {
+        min-width: 104px !important;
+        border-radius: 12px !important;
+        padding: 6px 8px !important;
+    }
+
+    .trend-period-pill span {
+        font-size: 0.62rem !important;
+    }
+
+    .trend-period-pill strong {
+        font-size: 0.72rem !important;
+    }
+
+    .trend-visual-panel {
+        gap: 5px !important;
+        padding: 7px !important;
+    }
+
+    .trend-chart-title {
+        font-size: 0.72rem !important;
+    }
+
+    .chart-wrapper.large-chart {
+        height: 132px !important;
+        padding: 4px !important;
+    }
+
+    .trend-selected-summary {
+        grid-template-columns: auto minmax(0, 1fr) !important;
+        gap: 4px 8px !important;
+        padding: 7px 8px !important;
+        border-radius: 12px !important;
+    }
+
+    .trend-selected-summary em {
+        grid-column: 1 / -1 !important;
+        font-size: 0.68rem !important;
+        white-space: normal !important;
+    }
+
+    .period-detail-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        min-height: 0 !important;
+    }
+
+    .trend-category-panel,
+    .daily-detail-panel {
+        padding: 8px !important;
+        border-radius: 12px !important;
+    }
+
+    .trend-category-panel h3,
+    .daily-detail-panel h3 {
+        margin-bottom: 7px !important;
+        font-size: 0.86rem !important;
+    }
+
+    .trend-category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+    }
+
+    .trend-category-card {
+        min-width: 0 !important;
+        border-radius: 10px !important;
+        padding: 7px !important;
+    }
+
+    .trend-category-top {
+        margin-bottom: 3px !important;
+    }
+
+    .trend-category-name,
+    .trend-category-amount {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .trend-category-name {
+        font-size: 0.68rem !important;
+    }
+
+    .trend-category-amount {
+        display: block !important;
+        font-size: 0.74rem !important;
+    }
+
+    .daily-expense-list {
+        max-height: 190px !important;
+        gap: 6px !important;
+        padding-right: 2px !important;
+    }
+
+    .daily-expense-card {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        gap: 8px !important;
+        padding: 7px 8px !important;
+        border-radius: 11px !important;
+    }
+
+    .daily-expense-title-row {
+        margin-bottom: 4px !important;
+    }
+
+    .daily-expense-title-row strong,
+    .daily-expense-desc {
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .daily-expense-title-row strong {
+        display: block !important;
+        font-size: 0.78rem !important;
+    }
+
+    .daily-expense-desc {
+        margin-top: 5px !important;
+        font-size: 0.68rem !important;
+    }
+
+    .daily-expense-right {
+        align-self: center !important;
+        font-size: 0.78rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: 146px minmax(0, 1fr) !important;
+    }
+
+    .pie-card .pie-chart-section {
+        grid-template-columns: 104px minmax(0, 1fr) !important;
+    }
+
+    .pie-card .pie-chart-wrapper {
+        width: 100px !important;
+        height: 88px !important;
+    }
+
+    .chart-wrapper.large-chart {
+        height: 116px !important;
+    }
+}
+
+.trend-detail-toggle {
+    display: none;
+}
+
+/* Final mobile Insights layout: the statistics card becomes a compact control
+   surface with one detail panel visible at a time. */
+@media (max-width: 768px) {
+    .trend-chart-section {
+        grid-template-rows: auto auto auto auto auto minmax(0, 1fr) !important;
+        gap: 6px !important;
+        padding-right: 1px !important;
+    }
+
+    .trend-toolbar {
+        gap: 4px !important;
+    }
+
+    .time-toggle-group {
+        padding: 3px !important;
+        border-color: #fed7aa !important;
+        background: #fff7ed !important;
+    }
+
+    .time-toggle-btn {
+        min-height: 28px !important;
+        border-radius: 10px !important;
+    }
+
+    .refresh-panel {
+        min-height: 30px !important;
+        padding: 4px 6px !important;
+        border-color: #fde68a !important;
+        background: #fffaf0 !important;
+    }
+
+    .last-updated-text {
+        font-size: 0.66rem !important;
+    }
+
+    .refresh-btn {
+        min-height: 26px !important;
+        padding: 4px 9px !important;
+        border-color: #fed7aa !important;
+        background: #fff7ed !important;
+        color: #c2410c !important;
+    }
+
+    .trend-quick-stats {
+        gap: 5px !important;
+    }
+
+    .trend-stat-chip {
+        min-height: 46px !important;
+        padding: 6px 7px !important;
+        border-radius: 11px !important;
+    }
+
+    .trend-period-strip {
+        min-height: 31px !important;
+        gap: 5px !important;
+    }
+
+    .trend-period-pill {
+        min-width: 96px !important;
+        padding: 4px 7px !important;
+    }
+
+    .trend-visual-panel {
+        gap: 4px !important;
+        padding: 6px !important;
+        border-radius: 11px !important;
+    }
+
+    .trend-chart-title {
+        min-height: 22px !important;
+    }
+
+    .chart-wrapper.large-chart {
+        height: 104px !important;
+        padding: 2px !important;
+    }
+
+    .trend-selected-summary {
+        min-height: 34px !important;
+        padding: 5px 7px !important;
+    }
+
+    .trend-selected-summary span,
+    .trend-selected-summary em {
+        font-size: 0.64rem !important;
+    }
+
+    .trend-selected-summary strong {
+        font-size: 0.78rem !important;
+    }
+
+    .trend-detail-toggle {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+        padding: 3px !important;
+        border: 1px solid #fed7aa !important;
+        border-radius: 13px !important;
+        background: #fff7ed !important;
+    }
+
+    .trend-detail-toggle button {
+        min-height: 28px !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+        color: #9a3412 !important;
+        font-size: 0.72rem !important;
+        font-weight: 900 !important;
+    }
+
+    .trend-detail-toggle button.is-active {
+        background: linear-gradient(135deg, #f97316, #2563eb) !important;
+        color: #ffffff !important;
+        box-shadow: 0 7px 14px rgba(249, 115, 22, 0.18) !important;
+    }
+
+    .period-detail-grid {
+        display: block !important;
+        min-height: 0 !important;
+    }
+
+    .period-detail-grid .trend-category-panel,
+    .period-detail-grid .daily-detail-panel {
+        display: none !important;
+    }
+
+    .period-detail-grid.trend-detail-mode-categories .trend-category-panel,
+    .period-detail-grid.trend-detail-mode-records .daily-detail-panel {
+        display: block !important;
+    }
+
+    .trend-category-panel,
+    .daily-detail-panel {
+        max-height: 124px !important;
+        overflow-y: auto !important;
+        padding: 7px !important;
+    }
+
+    .trend-category-panel h3,
+    .daily-detail-panel h3 {
+        margin-bottom: 5px !important;
+    }
+
+    .trend-category-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 5px !important;
+    }
+
+    .trend-category-card {
+        padding: 6px !important;
+    }
+
+    .daily-expense-list {
+        max-height: 86px !important;
+        gap: 5px !important;
+    }
+
+    .daily-expense-card {
+        min-height: 42px !important;
+        padding: 6px 7px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .chart-wrapper.large-chart {
+        height: 92px !important;
+    }
+
+    .trend-category-panel,
+    .daily-detail-panel {
+        max-height: 108px !important;
+    }
+}
+
+/* Put the actionable statistics before the chart on mobile. */
+@media (max-width: 768px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: 150px minmax(0, 1fr) !important;
+    }
+
+    .mobile-tab-insights.is-active .trend-card {
+        height: 100% !important;
+        min-height: 0 !important;
+        align-self: stretch !important;
+    }
+
+    .trend-chart-section {
+        grid-template-rows: none !important;
+        align-content: start !important;
+    }
+
+    .trend-toolbar {
+        order: 1 !important;
+    }
+
+    .trend-quick-stats {
+        order: 2 !important;
+    }
+
+    .trend-period-strip {
+        order: 3 !important;
+    }
+
+    .trend-selected-summary {
+        order: 4 !important;
+    }
+
+    .trend-detail-toggle {
+        order: 5 !important;
+    }
+
+    .period-detail-grid {
+        order: 6 !important;
+    }
+
+    .trend-visual-panel {
+        order: 7 !important;
+        margin-top: 1px !important;
+    }
+
+    .chart-wrapper.large-chart {
+        height: 88px !important;
+    }
+
+    .trend-category-panel,
+    .daily-detail-panel {
+        max-height: 114px !important;
+    }
+}
+
+/* Mobile Insights breathing room: larger share chart, no refresh row, and
+   balanced statistics panels inside the available viewport. */
+@media (max-width: 768px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: 216px minmax(0, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .mobile-tab-insights.is-active .pie-card,
+    .mobile-tab-insights.is-active .trend-card {
+        padding: 10px 12px !important;
+    }
+
+    .mobile-tab-insights.is-active .pie-card h2,
+    .mobile-tab-insights.is-active .trend-card h2 {
+        margin-bottom: 6px !important;
+        font-size: 1.04rem !important;
+        line-height: 1.15 !important;
+    }
+
+    .pie-card .pie-content {
+        gap: 7px !important;
+    }
+
+    .pie-card .pie-total-spending {
+        min-height: 36px !important;
+        padding: 7px 10px !important;
+    }
+
+    .pie-card .pie-chart-section {
+        grid-template-columns: 150px minmax(0, 1fr) !important;
+        gap: 10px !important;
+        min-height: 132px !important;
+    }
+
+    .pie-card .pie-chart-wrapper {
+        width: 142px !important;
+        height: 128px !important;
+    }
+
+    .pie-card .pie-breakdown-list {
+        max-height: 132px !important;
+        gap: 5px !important;
+    }
+
+    .pie-card .pie-breakdown-row {
+        min-height: 29px !important;
+        padding: 5px 7px !important;
+    }
+
+    .trend-chart-section {
+        gap: 7px !important;
+        overflow-y: auto !important;
+        padding-bottom: 2px !important;
+    }
+
+    .time-toggle-group {
+        min-height: 34px !important;
+    }
+
+    .time-toggle-btn {
+        min-height: 28px !important;
+    }
+
+    .trend-quick-stats {
+        gap: 6px !important;
+    }
+
+    .trend-stat-chip {
+        min-height: 50px !important;
+        padding: 7px 8px !important;
+    }
+
+    .trend-period-strip {
+        min-height: 40px !important;
+    }
+
+    .trend-period-pill {
+        min-width: 116px !important;
+        padding: 6px 9px !important;
+    }
+
+    .trend-selected-summary {
+        min-height: 42px !important;
+        padding: 7px 9px !important;
+    }
+
+    .trend-detail-toggle {
+        min-height: 34px !important;
+    }
+
+    .trend-category-panel,
+    .daily-detail-panel {
+        max-height: 120px !important;
+        padding: 8px !important;
+    }
+
+    .daily-expense-list {
+        max-height: 92px !important;
+    }
+
+    .trend-visual-panel {
+        padding: 7px !important;
+    }
+
+    .chart-wrapper.large-chart {
+        height: 94px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: 198px minmax(0, 1fr) !important;
+    }
+
+    .pie-card .pie-chart-section {
+        grid-template-columns: 124px minmax(0, 1fr) !important;
+    }
+
+    .pie-card .pie-chart-wrapper {
+        width: 118px !important;
+        height: 112px !important;
+    }
+
+    .pie-card .pie-breakdown-list {
+        max-height: 112px !important;
+    }
+}
+
+.daily-expense-meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+/* Mobile Records polish: keep each record as a clean two-line row instead of
+   letting category pills, titles, and amounts collide. */
+@media (max-width: 768px) {
+    .trend-toolbar {
+        min-height: 36px !important;
+        overflow: visible !important;
+    }
+
+    .time-toggle-group {
+        height: auto !important;
+        min-height: 34px !important;
+        overflow: visible !important;
+        align-items: center !important;
+    }
+
+    .time-toggle-btn {
+        line-height: 1 !important;
+    }
+
+    .trend-category-panel h3,
+    .daily-detail-panel h3 {
+        display: none !important;
+    }
+
+    .period-detail-grid.trend-detail-mode-records .daily-detail-panel {
+        max-height: 132px !important;
+        overflow: hidden !important;
+    }
+
+    .daily-expense-list {
+        max-height: 116px !important;
+        overflow-y: auto !important;
+        gap: 6px !important;
+        padding: 1px 3px 1px 0 !important;
+    }
+
+    .daily-expense-card {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: 10px !important;
+        min-height: 48px !important;
+        padding: 7px 9px !important;
+        border-radius: 13px !important;
+    }
+
+    .daily-expense-left {
+        display: grid !important;
+        gap: 5px !important;
+        min-width: 0 !important;
+    }
+
+    .daily-expense-title-row {
+        min-width: 0 !important;
+        margin: 0 !important;
+    }
+
+    .daily-expense-title-row strong {
+        display: block !important;
+        max-width: 100% !important;
+        color: #1f2937 !important;
+        font-size: 0.82rem !important;
+        line-height: 1.1 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .daily-expense-meta-row {
+        gap: 6px !important;
+        min-width: 0 !important;
+    }
+
+    .daily-expense-meta-row .mini-category-tag {
+        max-width: 100% !important;
+        padding: 2px 7px !important;
+        font-size: 0.64rem !important;
+        line-height: 1.2 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .daily-expense-desc {
+        display: none !important;
+    }
+
+    .daily-expense-right {
+        align-self: center !important;
+        color: #1d4ed8 !important;
+        font-size: 0.86rem !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+}
+
+/* Keep mobile Insights inside one viewport: the Statistics card stretches down
+   to just above the bottom tab bar, while only its inner content can scroll. */
+@media (max-width: 768px) {
+    .mobile-tab-panel.is-active {
+        align-content: stretch !important;
+    }
+
+    .mobile-tab-insights.is-active {
+        height: 100% !important;
+        min-height: 0 !important;
+        align-content: stretch !important;
+        grid-template-rows: minmax(206px, 0.36fr) minmax(0, 1fr) !important;
+        gap: 10px !important;
+        overflow: hidden !important;
+    }
+
+    .mobile-tab-insights.is-active .trend-card {
+        align-self: stretch !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .mobile-tab-insights.is-active .trend-chart-section {
+        height: 100% !important;
+        min-height: 0 !important;
+        max-height: 100% !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain !important;
+    }
+
+    .mobile-tab-insights.is-active .trend-visual-panel {
+        margin-bottom: 0 !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: minmax(190px, 0.34fr) minmax(0, 1fr) !important;
+    }
+}
+
+/* Mobile Insights final interaction model: details and chart no longer compete
+   for the same visible space. */
+@media (max-width: 768px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: minmax(204px, 0.34fr) minmax(0, 1fr) !important;
+    }
+
+    .mobile-tab-insights.is-active .trend-card {
+        padding-bottom: 8px !important;
+    }
+
+    .trend-card h2 {
+        margin-bottom: 8px !important;
+    }
+
+    .trend-toolbar {
+        height: 38px !important;
+        min-height: 38px !important;
+        overflow: visible !important;
+    }
+
+    .time-toggle-group {
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 4px !important;
+        overflow: visible !important;
+    }
+
+    .time-toggle-btn {
+        height: 30px !important;
+        min-height: 30px !important;
+        padding: 5px 4px !important;
+    }
+
+    .trend-detail-toggle {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+
+    .trend-detail-toggle button {
+        min-width: 0 !important;
+        padding-inline: 4px !important;
+    }
+
+    .trend-chart-section:not(.trend-detail-mode-chart) .trend-visual-panel {
+        display: none !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .trend-visual-panel {
+        display: grid !important;
+        order: 6 !important;
+        min-height: 0 !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .period-detail-grid {
+        display: none !important;
+    }
+
+    .period-detail-grid.trend-detail-mode-categories .trend-category-panel,
+    .period-detail-grid.trend-detail-mode-records .daily-detail-panel {
+        display: block !important;
+        max-height: none !important;
+    }
+
+    .period-detail-grid.trend-detail-mode-records .daily-detail-panel {
+        overflow: hidden !important;
+    }
+
+    .period-detail-grid.trend-detail-mode-records .daily-expense-list {
+        max-height: clamp(180px, 28svh, 260px) !important;
+    }
+
+    .period-detail-grid.trend-detail-mode-categories .trend-category-panel {
+        max-height: clamp(160px, 25svh, 230px) !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        height: clamp(180px, 28svh, 240px) !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: minmax(188px, 0.32fr) minmax(0, 1fr) !important;
+    }
+
+    .period-detail-grid.trend-detail-mode-records .daily-expense-list {
+        max-height: clamp(150px, 24svh, 220px) !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        height: clamp(150px, 24svh, 210px) !important;
+    }
+}
+
+/* Chart mode should read as one aligned panel, not nested offset boxes. */
+@media (max-width: 768px) {
+    .trend-chart-section.trend-detail-mode-chart .trend-visual-panel {
+        gap: 7px !important;
+        padding: 8px !important;
+        border-radius: 14px !important;
+        overflow: hidden !important;
+        background: #fffaf2 !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .trend-chart-title {
+        min-height: 22px !important;
+        padding: 0 2px !important;
+        align-items: center !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        width: 100% !important;
+        height: clamp(188px, 30svh, 250px) !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 6px 6px 4px !important;
+        border-color: #fed7aa !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart canvas {
+        display: block !important;
+        max-width: 100% !important;
+        max-height: 100% !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        height: clamp(168px, 27svh, 220px) !important;
+    }
+}
+
+/* Final mobile fit pass: keep the panels aligned without cropping charts. */
+@media (max-width: 768px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: minmax(244px, 0.39fr) minmax(0, 1fr) !important;
+    }
+
+    .mobile-tab-insights.is-active .pie-card {
+        overflow: hidden !important;
+    }
+
+    .pie-card .pie-content {
+        min-height: 0 !important;
+        gap: 7px !important;
+    }
+
+    .pie-card .pie-total-spending {
+        min-height: 40px !important;
+        padding: 8px 10px !important;
+    }
+
+    .pie-card .pie-chart-section {
+        grid-template-columns: 142px minmax(0, 1fr) !important;
+        min-height: 146px !important;
+        gap: 10px !important;
+        align-items: center !important;
+        overflow: visible !important;
+    }
+
+    .pie-card .pie-chart-wrapper {
+        width: 136px !important;
+        height: 136px !important;
+        min-height: 136px !important;
+        align-self: center !important;
+        overflow: visible !important;
+    }
+
+    .pie-card .pie-breakdown-list {
+        max-height: 146px !important;
+        overflow-y: auto !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .trend-visual-panel {
+        padding: 8px !important;
+        overflow: visible !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        height: clamp(250px, 38svh, 310px) !important;
+        padding: 8px 8px 12px !important;
+        overflow: visible !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart canvas {
+        height: 100% !important;
+        max-height: none !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-tab-insights.is-active {
+        grid-template-rows: minmax(222px, 0.36fr) minmax(0, 1fr) !important;
+    }
+
+    .pie-card .pie-chart-section {
+        grid-template-columns: 124px minmax(0, 1fr) !important;
+        min-height: 128px !important;
+    }
+
+    .pie-card .pie-chart-wrapper {
+        width: 118px !important;
+        height: 118px !important;
+        min-height: 118px !important;
+    }
+
+    .pie-card .pie-breakdown-list {
+        max-height: 128px !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        height: clamp(220px, 34svh, 280px) !important;
+    }
+}
+
+/* Expense overview chart box should fill its orange panel cleanly. */
+@media (max-width: 768px) {
+    .trend-chart-section.trend-detail-mode-chart .trend-visual-panel {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        gap: 8px !important;
+        padding: 10px !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        width: 100% !important;
+        height: clamp(280px, 42svh, 340px) !important;
+        box-sizing: border-box !important;
+        margin: 0 !important;
+        padding: 10px 10px 14px !important;
+        border-radius: 14px !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        height: clamp(248px, 38svh, 310px) !important;
+    }
+}
+
+/* Chart mode gets the available Statistics space instead of being squeezed by
+   summary controls that are not needed while inspecting the overview. */
+@media (max-width: 768px) {
+    .trend-chart-section.trend-detail-mode-chart {
+        display: grid !important;
+        grid-template-rows: auto auto minmax(0, 1fr) !important;
+        align-content: stretch !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .trend-quick-stats,
+    .trend-chart-section.trend-detail-mode-chart .trend-period-strip,
+    .trend-chart-section.trend-detail-mode-chart .trend-selected-summary {
+        display: none !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .trend-toolbar {
+        order: 1 !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .trend-detail-toggle {
+        order: 2 !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .trend-visual-panel {
+        order: 3 !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        display: grid !important;
+        grid-template-rows: auto minmax(0, 1fr) !important;
+    }
+
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        height: 100% !important;
+        min-height: 280px !important;
+        max-height: none !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .trend-chart-section.trend-detail-mode-chart .chart-wrapper.large-chart {
+        min-height: 250px !important;
+    }
+}
+
+/* Center the Add form inside the mobile Add tab. */
+@media (max-width: 768px) {
+    .mobile-tab-add.is-active {
+        display: grid !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        align-items: center !important;
+        justify-items: center !important;
+        align-content: center !important;
+        overflow: hidden !important;
+        padding: 8px 0 10px !important;
+    }
+
+    .mobile-tab-add.is-active .form-card {
+        width: min(100%, 560px) !important;
+        max-height: calc(100% - 12px) !important;
+        align-self: center !important;
+        justify-self: center !important;
+        overflow-y: auto !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .mobile-tab-add.is-active {
+        padding-block: 6px 8px !important;
+    }
+}
+
+.admin-mobile-detail-tabs {
+    display: none;
+}
+
+/* Mobile admin: compact user picker plus a single detail section at a time. */
+@media (max-width: 768px) {
+    .container.admin-page {
+        width: min(100% - 12px, 680px) !important;
+        height: calc(100svh - 84px) !important;
+        margin: 6px auto 0 !important;
+        display: grid !important;
+        grid-template-rows: auto minmax(0, 1fr) !important;
+        gap: 7px !important;
+        overflow: hidden !important;
+    }
+
+    .admin-hero {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: 8px !important;
+        padding: 8px 10px !important;
+        border-radius: 16px !important;
+    }
+
+    .admin-hero .admin-kicker,
+    .admin-hero p {
+        display: none !important;
+    }
+
+    .admin-hero h2 {
+        margin: 0 !important;
+        font-size: 1rem !important;
+        line-height: 1.1 !important;
+    }
+
+    .admin-refresh-btn {
+        width: auto !important;
+        min-height: 30px !important;
+        padding: 6px 10px !important;
+        border-radius: 11px !important;
+        font-size: 0.7rem !important;
+        white-space: nowrap !important;
+    }
+
+    .admin-success,
+    .admin-error {
+        padding: 7px 9px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .admin-layout {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        grid-template-rows: 176px minmax(0, 1fr) !important;
+        gap: 8px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .admin-panel {
+        min-height: 0 !important;
+        border-radius: 16px !important;
+        padding: 8px !important;
+    }
+
+    .admin-users-panel {
+        position: static !important;
+        display: grid !important;
+        grid-template-rows: auto auto minmax(0, 1fr) !important;
+        overflow: hidden !important;
+    }
+
+    .admin-panel-header {
+        margin-bottom: 6px !important;
+    }
+
+    .admin-panel-header h3 {
+        font-size: 0.9rem !important;
+    }
+
+    .admin-panel-header span {
+        font-size: 0.68rem !important;
+    }
+
+    .admin-search-form {
+        grid-template-columns: minmax(0, 1fr) auto auto !important;
+        gap: 5px !important;
+        margin-bottom: 7px !important;
+    }
+
+    .admin-search-form input {
+        grid-column: auto !important;
+        min-height: 34px !important;
+        padding: 7px 9px !important;
+        border-radius: 11px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .admin-search-btn,
+    .admin-clear-search-btn {
+        min-height: 34px !important;
+        padding: 7px 9px !important;
+        border-radius: 11px !important;
+        font-size: 0.7rem !important;
+    }
+
+    .admin-user-list {
+        display: flex !important;
+        grid-template-columns: none !important;
+        gap: 8px !important;
+        max-height: none !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        padding: 1px 1px 5px !important;
+        scroll-snap-type: x proximity !important;
+    }
+
+    .admin-user-card {
+        flex: 0 0 132px !important;
+        display: grid !important;
+        grid-template-columns: auto minmax(0, 1fr) !important;
+        grid-template-rows: auto auto !important;
+        align-items: center !important;
+        gap: 5px 7px !important;
+        min-height: 78px !important;
+        padding: 8px !important;
+        border-radius: 14px !important;
+        scroll-snap-align: start !important;
+    }
+
+    .admin-avatar {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .admin-user-card-body {
+        gap: 1px !important;
+    }
+
+    .admin-user-card-body strong {
+        font-size: 0.74rem !important;
+    }
+
+    .admin-user-card-body span {
+        font-size: 0.62rem !important;
+    }
+
+    .admin-role-pill,
+    .admin-self-tag {
+        grid-column: 1 / -1 !important;
+        justify-self: start !important;
+        padding: 3px 7px !important;
+        font-size: 0.62rem !important;
+    }
+
+    .admin-detail-panel {
+        display: grid !important;
+        grid-template-rows: auto auto auto auto minmax(0, 1fr) !important;
+        gap: 7px !important;
+        height: 100% !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .admin-detail-heading {
+        min-height: 0 !important;
+        gap: 8px !important;
+    }
+
+    .admin-avatar-large {
+        width: 38px !important;
+        height: 38px !important;
+    }
+
+    .admin-detail-heading .admin-kicker {
+        display: none !important;
+    }
+
+    .admin-detail-heading h3 {
+        font-size: 0.94rem !important;
+    }
+
+    .admin-inline-loading {
+        font-size: 0.66rem !important;
+    }
+
+    .admin-detail-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 6px !important;
+        font-size: 0.7rem !important;
+    }
+
+    .admin-detail-grid > div {
+        padding: 7px !important;
+        border-radius: 11px !important;
+    }
+
+    .admin-detail-grid > div:nth-child(3) {
+        grid-column: 1 / -1 !important;
+    }
+
+    .admin-detail-grid span {
+        font-size: 0.62rem !important;
+    }
+
+    .admin-detail-grid strong,
+    .admin-detail-grid select {
+        font-size: 0.72rem !important;
+    }
+
+    .admin-detail-actions .danger-outline-btn {
+        width: 100% !important;
+        min-height: 30px !important;
+        padding: 6px 9px !important;
+        border-radius: 11px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .admin-mobile-detail-tabs {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 4px !important;
+        padding: 3px !important;
+        border: 1px solid #bfdbfe !important;
+        border-radius: 13px !important;
+        background: #eff6ff !important;
+    }
+
+    .admin-mobile-detail-tabs button {
+        min-height: 30px !important;
+        border: 0 !important;
+        border-radius: 10px !important;
+        background: transparent !important;
+        color: #1d4ed8 !important;
+        font-size: 0.72rem !important;
+        font-weight: 900 !important;
+    }
+
+    .admin-mobile-detail-tabs button.is-active {
+        background: linear-gradient(135deg, #2563eb, #14b8a6) !important;
+        color: #ffffff !important;
+        box-shadow: 0 8px 16px rgba(37, 99, 235, 0.18) !important;
+    }
+
+    .admin-selected-content {
+        display: block !important;
+        min-height: 0 !important;
+        overflow: hidden !important;
+    }
+
+    .admin-selected-content.admin-mobile-tab-records .admin-user-activity,
+    .admin-selected-content.admin-mobile-tab-activity .admin-user-records {
+        display: none !important;
+    }
+
+    .admin-user-records,
+    .admin-user-activity {
+        height: 100% !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        gap: 6px !important;
+        padding-right: 2px !important;
+    }
+
+    .activity-list.user-activity-list {
+        max-height: none !important;
+        overflow: visible !important;
+        gap: 6px !important;
+    }
+
+    .activity-item {
+        gap: 4px !important;
+        padding: 7px !important;
+        border-radius: 11px !important;
+        font-size: 0.72rem !important;
+    }
+
+    .activity-item p {
+        margin-top: 2px !important;
+        font-size: 0.66rem !important;
+        line-height: 1.25 !important;
+    }
+
+    .activity-meta {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        gap: 6px !important;
+        font-size: 0.62rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .container.admin-page {
+        height: calc(100svh - 78px) !important;
+    }
+
+    .admin-layout {
+        grid-template-rows: 164px minmax(0, 1fr) !important;
+    }
+
+    .admin-user-card {
+        flex-basis: 118px !important;
+    }
+}
+
+/* Mobile admin overlap pass: keep the user picker within its row and give
+   selected user records more usable height. */
+@media (max-width: 768px) {
+    .admin-layout {
+        grid-template-rows: 170px minmax(0, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .admin-users-panel {
+        padding: 8px 9px !important;
+    }
+
+    .admin-panel-header {
+        min-height: 24px !important;
+        margin-bottom: 5px !important;
+    }
+
+    .admin-search-form {
+        grid-template-columns: minmax(0, 1fr) 72px !important;
+        gap: 6px !important;
+        margin-bottom: 6px !important;
+    }
+
+    .admin-search-form input {
+        height: 42px !important;
+        min-height: 42px !important;
+        font-size: 0.76rem !important;
+    }
+
+    .admin-search-btn,
+    .admin-clear-search-btn {
+        height: 42px !important;
+        min-height: 42px !important;
+        padding: 7px 8px !important;
+    }
+
+    .admin-clear-search-btn {
+        grid-column: 1 / -1 !important;
+        height: 30px !important;
+        min-height: 30px !important;
+    }
+
+    .admin-user-list {
+        gap: 8px !important;
+        padding: 0 1px 3px !important;
+    }
+
+    .admin-user-card {
+        flex: 0 0 170px !important;
+        grid-template-columns: 34px minmax(0, 1fr) !important;
+        grid-template-rows: minmax(0, 1fr) auto !important;
+        min-height: 76px !important;
+        max-height: 76px !important;
+        padding: 8px !important;
+        gap: 4px 8px !important;
+        align-items: center !important;
+        overflow: hidden !important;
+    }
+
+    .admin-user-card .admin-avatar {
+        grid-row: 1 / 3 !important;
+        align-self: center !important;
+    }
+
+    .admin-user-card-body {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+        align-self: end !important;
+    }
+
+    .admin-role-pill {
+        grid-column: 2 !important;
+        grid-row: 2 !important;
+        justify-self: start !important;
+        align-self: start !important;
+    }
+
+    .admin-user-card .admin-self-tag {
+        grid-column: 2 !important;
+        grid-row: 2 !important;
+        justify-self: end !important;
+        align-self: start !important;
+    }
+
+    .admin-role-pill,
+    .admin-self-tag {
+        padding: 2px 7px !important;
+        line-height: 1.15 !important;
+    }
+
+    .admin-detail-panel {
+        gap: 6px !important;
+        padding: 9px !important;
+    }
+
+    .admin-detail-heading {
+        min-height: 38px !important;
+    }
+
+    .admin-detail-grid {
+        gap: 6px !important;
+    }
+
+    .admin-detail-grid > div {
+        min-height: 52px !important;
+        padding: 7px 8px !important;
+    }
+
+    .admin-detail-grid > div:nth-child(3) {
+        display: grid !important;
+        grid-template-columns: auto minmax(0, 1fr) !important;
+        align-items: center !important;
+        min-height: 48px !important;
+    }
+
+    .admin-detail-grid > div:nth-child(3) select {
+        min-height: 34px !important;
+        padding: 6px 9px !important;
+    }
+
+    .admin-detail-actions .danger-outline-btn {
+        min-height: 34px !important;
+    }
+
+    .admin-mobile-detail-tabs {
+        min-height: 38px !important;
+    }
+
+    .admin-mobile-detail-tabs button {
+        min-height: 30px !important;
+    }
+
+    .admin-subheader {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 2 !important;
+        padding: 0 10px 5px 0 !important;
+        background: #ffffff !important;
+    }
+
+    .admin-user-records,
+    .admin-user-activity {
+        scrollbar-gutter: stable !important;
+        padding-right: 6px !important;
+    }
+
+    .activity-item {
+        padding: 7px 8px !important;
+    }
+
+    .activity-item strong {
+        display: block !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+    }
+
+    .activity-meta {
+        align-items: center !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .admin-layout {
+        grid-template-rows: 160px minmax(0, 1fr) !important;
+    }
+
+    .admin-user-card {
+        flex-basis: 150px !important;
     }
 }
