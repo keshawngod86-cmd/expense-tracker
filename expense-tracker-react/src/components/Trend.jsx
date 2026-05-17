@@ -89,9 +89,10 @@ function formatCurrency(value) {
     return `$${Number(value).toFixed(2)}`;
 }
 
-function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
+function Trend({ expenses }) {
     const [timeDimension, setTimeDimension] = useState("monthly");
     const [selectedPeriod, setSelectedPeriod] = useState(null);
+    const [detailMode, setDetailMode] = useState("categories");
 
     const activeOption =
         timeDimensionOptions.find((option) => option.key === timeDimension) ||
@@ -108,13 +109,19 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
         return totals;
     }, [expenses, activeOption]);
 
+    const periodLabels = useMemo(() => Object.keys(periodTotals).sort(), [periodTotals]);
+    const effectiveSelectedPeriod =
+        selectedPeriod && periodLabels.includes(selectedPeriod)
+            ? selectedPeriod
+            : periodLabels[periodLabels.length - 1] || null;
+
     const selectedPeriodExpenses = useMemo(() => {
-        if (!selectedPeriod) return [];
+        if (!effectiveSelectedPeriod) return [];
 
         return expenses
-            .filter((expense) => activeOption.getPeriodKey(expense) === selectedPeriod)
+            .filter((expense) => activeOption.getPeriodKey(expense) === effectiveSelectedPeriod)
             .sort((a, b) => b.amount - a.amount);
-    }, [expenses, activeOption, selectedPeriod]);
+    }, [expenses, activeOption, effectiveSelectedPeriod]);
 
     const categoryTotalsForSelectedPeriod = useMemo(() => {
         const totals = {};
@@ -126,24 +133,28 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
         return totals;
     }, [selectedPeriodExpenses]);
 
-    const periodLabels = Object.keys(periodTotals).sort();
     const periodValues = periodLabels.map((period) => periodTotals[period]);
-    const periodMin = periodValues.length ? Math.min(...periodValues) : 0;
-    const periodMax = periodValues.length ? Math.max(...periodValues) : 0;
+    const chartPeriodLabels =
+        timeDimension === "daily" && periodLabels.length > 18
+            ? periodLabels.slice(-18)
+            : periodLabels;
+    const chartPeriodValues = chartPeriodLabels.map((period) => periodTotals[period]);
+    const chartPeriodMin = chartPeriodValues.length ? Math.min(...chartPeriodValues) : 0;
+    const chartPeriodMax = chartPeriodValues.length ? Math.max(...chartPeriodValues) : 0;
 
-    const barColors = periodValues.map(
-        (value) => getHeatColor(value, periodMin, periodMax).background
+    const barColors = chartPeriodValues.map(
+        (value) => getHeatColor(value, chartPeriodMin, chartPeriodMax).background
     );
-    const barBorderColors = periodValues.map(
-        (value) => getHeatColor(value, periodMin, periodMax).border
+    const barBorderColors = chartPeriodValues.map(
+        (value) => getHeatColor(value, chartPeriodMin, chartPeriodMax).border
     );
 
     const barData = {
-        labels: periodLabels,
+        labels: chartPeriodLabels,
         datasets: [
             {
                 label: activeOption.chartLabel,
-                data: periodValues,
+                data: chartPeriodValues,
                 borderWidth: 1.5,
                 borderRadius: 8,
                 backgroundColor: barColors,
@@ -158,7 +169,7 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
         onClick: (event, elements) => {
             if (elements.length > 0) {
                 const index = elements[0].index;
-                setSelectedPeriod(periodLabels[index]);
+                setSelectedPeriod(chartPeriodLabels[index]);
             }
         },
         plugins: {
@@ -187,6 +198,11 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
                 },
             },
             x: {
+                ticks: {
+                    autoSkip: true,
+                    maxRotation: 0,
+                    minRotation: 0,
+                },
                 title: {
                     display: false,
                     text: activeOption.xAxisTitle,
@@ -195,16 +211,13 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
         },
     };
 
-    const lastUpdatedText = lastUpdatedAt
-        ? lastUpdatedAt.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-          })
-        : "Not refreshed yet";
-
     const totalForActiveRange = periodValues.reduce((total, value) => total + value, 0);
     const averageForActiveRange =
         periodValues.length > 0 ? totalForActiveRange / periodValues.length : 0;
+    const selectedPeriodTotal = effectiveSelectedPeriod
+        ? periodTotals[effectiveSelectedPeriod] || 0
+        : 0;
+    const visiblePeriodLabels = periodLabels.slice(-8);
 
     function handleDimensionChange(nextDimension) {
         setTimeDimension(nextDimension);
@@ -212,7 +225,7 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
     }
 
     return (
-        <div className="trend-chart-section">
+        <div className={`trend-chart-section trend-detail-mode-${detailMode}`}>
             <div className="trend-toolbar">
                 <div className="time-toggle-group" aria-label="Choose chart time range">
                     {timeDimensionOptions.map((option) => (
@@ -228,18 +241,6 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
                             {option.label}
                         </button>
                     ))}
-                </div>
-
-                <div className="refresh-panel">
-                    <span className="last-updated-text">Last update: {lastUpdatedText}</span>
-                    <button
-                        type="button"
-                        className="secondary-btn refresh-btn"
-                        onClick={onRefresh}
-                        disabled={isRefreshing}
-                    >
-                        {isRefreshing ? "Refreshing..." : "Refresh Data"}
-                    </button>
                 </div>
             </div>
 
@@ -264,91 +265,153 @@ function Trend({ expenses, onRefresh, isRefreshing, lastUpdatedAt }) {
                 </div>
             ) : (
                 <>
+                    <div className="trend-period-strip" aria-label="Choose period">
+                        {visiblePeriodLabels.map((period) => (
+                            <button
+                                key={period}
+                                type="button"
+                                className={`trend-period-pill ${
+                                    period === effectiveSelectedPeriod ? "is-active" : ""
+                                }`}
+                                onClick={() => setSelectedPeriod(period)}
+                                aria-pressed={period === effectiveSelectedPeriod}
+                            >
+                                <span>{period}</span>
+                                <strong>{formatCurrency(periodTotals[period])}</strong>
+                            </button>
+                        ))}
+                    </div>
+
                     <div className="trend-visual-panel">
                         <div className="trend-chart-title">
                             <span>{activeOption.chartTitle}</span>
-                            <strong>Tap a bar</strong>
+                            <strong>{chartPeriodLabels.length} points</strong>
                         </div>
                         <div className="chart-wrapper large-chart">
                             <Bar data={barData} options={barOptions} />
                         </div>
                     </div>
 
-                    {selectedPeriod ? (
-                        <div className="period-detail-grid">
-                            <div className="trend-category-panel">
-                                <h3>Category Breakdown in {selectedPeriod}</h3>
-
-                                {Object.keys(categoryTotalsForSelectedPeriod).length === 0 ? (
-                                    <p>No category data for this period.</p>
-                                ) : (
-                                    <div className="trend-category-grid">
-                                        {Object.keys(categoryTotalsForSelectedPeriod).map(
-                                            (category) => (
-                                                <div
-                                                    key={category}
-                                                    className={`trend-category-card ${
-                                                        categoryClasses[category] ||
-                                                        categoryClasses.Other
-                                                    }`}
-                                                >
-                                                    <div className="trend-category-top">
-                                                        <span className="trend-category-name">
-                                                            {category}
-                                                        </span>
-                                                    </div>
-                                                    <strong className="trend-category-amount">
-                                                        {formatCurrency(
-                                                            categoryTotalsForSelectedPeriod[
-                                                                category
-                                                            ]
-                                                        )}
-                                                    </strong>
-                                                </div>
-                                            )
-                                        )}
-                                    </div>
-                                )}
+                    {effectiveSelectedPeriod ? (
+                        <>
+                            <div className="trend-selected-summary">
+                                <span>{activeOption.xAxisTitle}</span>
+                                <strong>{effectiveSelectedPeriod}</strong>
+                                <em>
+                                    {formatCurrency(selectedPeriodTotal)} /{" "}
+                                    {selectedPeriodExpenses.length} records
+                                </em>
                             </div>
 
-                            <div className="daily-detail-panel">
-                                <h3>Expense Details for {selectedPeriod}</h3>
+                            <div className="trend-detail-toggle" aria-label="Choose detail panel">
+                                <button
+                                    type="button"
+                                    className={detailMode === "categories" ? "is-active" : ""}
+                                    aria-pressed={detailMode === "categories"}
+                                    onClick={() => setDetailMode("categories")}
+                                >
+                                    Categories
+                                </button>
+                                <button
+                                    type="button"
+                                    className={detailMode === "records" ? "is-active" : ""}
+                                    aria-pressed={detailMode === "records"}
+                                    onClick={() => setDetailMode("records")}
+                                >
+                                    Records
+                                </button>
+                                <button
+                                    type="button"
+                                    className={detailMode === "chart" ? "is-active" : ""}
+                                    aria-pressed={detailMode === "chart"}
+                                    onClick={() => setDetailMode("chart")}
+                                >
+                                    Chart
+                                </button>
+                            </div>
 
-                                {selectedPeriodExpenses.length > 0 ? (
-                                    <div className="daily-expense-list">
-                                        {selectedPeriodExpenses.map((expense) => (
-                                            <div
-                                                className="daily-expense-card"
-                                                key={expense.id}
-                                            >
-                                                <div className="daily-expense-left">
-                                                    <div className="daily-expense-title-row">
-                                                        <strong>{expense.title}</strong>
-                                                    </div>
-                                                    <span
-                                                        className={`mini-category-tag ${
-                                                            categoryClasses[expense.category] ||
+                            <div className={`period-detail-grid trend-detail-mode-${detailMode}`}>
+                                <div className="trend-category-panel">
+                                    <h3>Categories</h3>
+
+                                    {Object.keys(categoryTotalsForSelectedPeriod).length === 0 ? (
+                                        <p>No category data for this period.</p>
+                                    ) : (
+                                        <div className="trend-category-grid">
+                                            {Object.keys(categoryTotalsForSelectedPeriod).map(
+                                                (category) => (
+                                                    <div
+                                                        key={category}
+                                                        className={`trend-category-card ${
+                                                            categoryClasses[category] ||
                                                             categoryClasses.Other
                                                         }`}
                                                     >
-                                                        {expense.category}
-                                                    </span>
-                                                    <p className="daily-expense-desc">
-                                                        {expense.description || "No description"}
-                                                    </p>
-                                                </div>
+                                                        <div className="trend-category-top">
+                                                            <span className="trend-category-name">
+                                                                {category}
+                                                            </span>
+                                                        </div>
+                                                        <strong className="trend-category-amount">
+                                                            {formatCurrency(
+                                                                categoryTotalsForSelectedPeriod[
+                                                                    category
+                                                                ]
+                                                            )}
+                                                        </strong>
+                                                    </div>
+                                                )
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
 
-                                                <div className="daily-expense-right">
-                                                    {formatCurrency(expense.amount)}
+                                <div className="daily-detail-panel">
+                                    <h3>Records</h3>
+
+                                    {selectedPeriodExpenses.length > 0 ? (
+                                        <div className="daily-expense-list">
+                                            {selectedPeriodExpenses.map((expense) => (
+                                                <div
+                                                    className="daily-expense-card"
+                                                    key={expense.id}
+                                                >
+                                                    <div className="daily-expense-left">
+                                                        <div className="daily-expense-title-row">
+                                                            <strong>
+                                                                {expense.title || expense.category}
+                                                            </strong>
+                                                        </div>
+                                                        <div className="daily-expense-meta-row">
+                                                            <span
+                                                                className={`mini-category-tag ${
+                                                                    categoryClasses[
+                                                                        expense.category
+                                                                    ] || categoryClasses.Other
+                                                                }`}
+                                                            >
+                                                                {expense.category}
+                                                            </span>
+                                                            {expense.description ? (
+                                                                <p className="daily-expense-desc">
+                                                                    {expense.description}
+                                                                </p>
+                                                            ) : null}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="daily-expense-right">
+                                                        {formatCurrency(expense.amount)}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <p>No expense records for this period.</p>
-                                )}
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p>No expense records for this period.</p>
+                                    )}
+                                </div>
                             </div>
-                        </div>
+                        </>
                     ) : null}
                 </>
             )}

@@ -47,8 +47,6 @@ function App() {
     const [activeView, setActiveView] = useState("dashboard");
     const [mobileTab, setMobileTab] = useState("add");
     const [expenses, setExpenses] = useState([]);
-    const [isRefreshingExpenses, setIsRefreshingExpenses] = useState(false);
-    const [lastUpdatedAt, setLastUpdatedAt] = useState(null);
     const [editingExpense, setEditingExpense] = useState(null);
 
     const [searchText, setSearchText] = useState("");
@@ -127,12 +125,22 @@ function App() {
     }
 
     const fetchExpenses = useCallback(async function fetchExpenses() {
-        setIsRefreshingExpenses(true);
-
         try {
             const response = await fetch(`${API_BASE_URL}/expenses`, {
                 headers: getAuthHeaders(),
             });
+
+            if (response.status === 401) {
+                setAuthToken("");
+                setCurrentUser(null);
+                setActiveView("dashboard");
+                setMobileTab("add");
+                setExpenses([]);
+                setEditingExpense(null);
+                localStorage.removeItem(TOKEN_STORAGE_KEY);
+                localStorage.removeItem(USER_STORAGE_KEY);
+                return;
+            }
 
             if (!response.ok) {
                 throw new Error("Failed to fetch expenses");
@@ -140,11 +148,8 @@ function App() {
 
             const data = await response.json();
             setExpenses(data);
-            setLastUpdatedAt(new Date());
         } catch (error) {
             console.error("Failed to fetch expenses:", error);
-        } finally {
-            setIsRefreshingExpenses(false);
         }
     }, [getAuthHeaders]);
 
@@ -450,12 +455,7 @@ function App() {
 
                         <section className="card trend-card">
                             <h2>Spending Statistics</h2>
-                            <Trend
-                                expenses={filteredExpenses}
-                                onRefresh={fetchExpenses}
-                                isRefreshing={isRefreshingExpenses}
-                                lastUpdatedAt={lastUpdatedAt}
-                            />
+                            <Trend expenses={filteredExpenses} />
                         </section>
                     </div>
                 </main>

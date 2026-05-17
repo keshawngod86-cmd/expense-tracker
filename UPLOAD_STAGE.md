@@ -1,12 +1,12 @@
-﻿# Upload 04 - Admin Per-User Activity UI
+﻿# Upload 05 - Insights and Statistics Polish
 
-Improves the admin screen so user records and activity are shown per selected user instead of mixing every user into one crowded activity area.
+Applies the final dashboard and insights behavior: total spending, cleaner spending share, no refresh/update controls, and a more usable statistics layout.
 
 ## Main changes
-- Admin user list keeps search and selection.
-- Selected user detail shows profile fields without password data.
-- Added Information and Activity sections are separated.
-- Mobile admin layout receives the final compact rounded Bubble Bill styling.
+- Removes refresh and last-update controls from spending statistics.
+- Adds mobile-friendly period pills and detail tabs.
+- Improves chart sizing and label behavior.
+- Keeps spending share focused on total spending and category proportion.
 
 ## Run
 Backend: cd expense-tracker-backend; python -m venv .venv; activate it; python -m pip install -r requirements.txt; python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000

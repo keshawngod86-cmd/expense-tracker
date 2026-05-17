@@ -127,7 +127,7 @@ function CategoryPieChart({ expenses }) {
                                         style={{ backgroundColor: color }}
                                         aria-hidden="true"
                                     />
-                                    {category}
+                                    <span className="pie-category-name">{category}</span>
                                 </span>
                                 <span className="pie-category-value">
                                     {formatCurrency(amount)} ({percentage}%)
