@@ -4,3 +4,6 @@ sqlmodel>=0.0.22,<1.0
 pymysql>=1.1,<2.0
 passlib[bcrypt]>=1.7,<2.0
 PyJWT>=2.8,<3.0
+bcrypt==4.0.1
+
+
