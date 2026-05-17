@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Header, HTTPException
+﻿from fastapi import FastAPI, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import or_
 from sqlmodel import Session, select
 
-from auth import create_access_token, decode_access_token, hash_password, verify_password
+from auth import create_access_token, decode_access_token, hash_password, password_needs_rehash, verify_password
 from db import engine, create_db_and_tables
 from models import (
     Expense,
@@ -125,6 +125,10 @@ def login(credentials: LoginRequest):
 
         if not user or not verify_password(credentials.password, user.password_hash):
             raise HTTPException(status_code=401, detail="Invalid username or password")
+
+        if password_needs_rehash(user.password_hash):
+            user.password_hash = hash_password(credentials.password)
+            session.add(user)
 
         log_activity(session, user, "login", "User signed in")
         session.commit()
@@ -431,3 +435,4 @@ def update_expense(
         session.commit()
         session.refresh(expense)
         return expense
+

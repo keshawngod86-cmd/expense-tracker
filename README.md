@@ -1,4 +1,4 @@
-# Bubble Bill Expense Tracker
+﻿# Bubble Bill Expense Tracker
 
 A full-stack expense tracking app built with React, FastAPI, SQLModel, and MySQL.
 
@@ -157,7 +157,7 @@ FROM useractivity
 ORDER BY id DESC;
 ```
 
-Passwords are stored only as hashes in `password_hash`. The admin API and admin UI do not return raw passwords.
+Passwords are stored only as bcrypt hashes in `password_hash` using `passlib`. Login uses `PyJWT` tokens with an expiry time. The admin API and admin UI do not return raw passwords.
 
 ## Reset and Seed User Expenses
 
@@ -183,3 +183,4 @@ After the backend starts, FastAPI docs are available at:
 ```text
 http://127.0.0.1:8000/docs
 ```
+
