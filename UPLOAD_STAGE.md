@@ -1,12 +1,11 @@
-﻿# Upload 05 - Insights and Statistics Polish
+﻿# Upload 06 - Final Bubble Bill Release
 
-Applies the final dashboard and insights behavior: total spending, cleaner spending share, no refresh/update controls, and a more usable statistics layout.
+Exact cleaned final source snapshot prepared for upload, excluding generated folders and local-only dependency/build output.
 
 ## Main changes
-- Removes refresh and last-update controls from spending statistics.
-- Adds mobile-friendly period pills and detail tabs.
-- Improves chart sizing and label behavior.
-- Keeps spending share focused on total spending and category proportion.
+- Matches the current final project source.
+- Includes backend, frontend, README, logo assets, seed script, and database setup.
+- Excludes .git, node_modules, dist, virtual environments, and Python cache files.
 
 ## Run
 Backend: cd expense-tracker-backend; python -m venv .venv; activate it; python -m pip install -r requirements.txt; python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
