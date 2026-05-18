@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
 
 function formatDateTime(value) {
     if (!value) return "Unknown";
@@ -249,15 +249,6 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
                         expense activity.
                     </p>
                 </div>
-
-                <button
-                    type="button"
-                    className="secondary-btn admin-refresh-btn"
-                    onClick={loadAdminData}
-                    disabled={isLoading}
-                >
-                    {isLoading ? "Refreshing..." : "Refresh Admin Data"}
-                </button>
             </section>
 
             {message ? <p className="admin-success">{message}</p> : null}
@@ -515,3 +506,5 @@ function AdminPanel({ apiBaseUrl, authToken, currentUser }) {
 }
 
 export default AdminPanel;
+
+

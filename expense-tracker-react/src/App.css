@@ -699,6 +699,10 @@ body {
     color: #64748b;
 }
 
+.dashboard-view-tabs {
+    display: none;
+}
+
 .dashboard-layout {
     display: grid;
     grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.35fr);
@@ -710,6 +714,84 @@ body {
     display: contents;
 }
 
+@media (min-width: 769px) {
+    .dashboard-view-tabs {
+        width: min(100% - 32px, 1180px);
+        margin: 14px auto 0;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        padding: 8px;
+        border: 1px solid rgba(191, 219, 254, 0.92);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 16px 32px rgba(37, 99, 235, 0.12);
+    }
+
+    .dashboard-view-tab {
+        min-height: 46px;
+        border: 0;
+        border-radius: 16px;
+        background: transparent;
+        color: #334155;
+        font-weight: 900;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .dashboard-view-tab:hover {
+        transform: translateY(-1px);
+        background: rgba(226, 240, 255, 0.86);
+    }
+
+    .dashboard-view-tab.is-active {
+        color: white;
+        background: linear-gradient(135deg, #2f6feb, #25b9bd);
+        box-shadow: 0 10px 24px rgba(37, 99, 235, 0.28);
+    }
+
+    .dashboard-layout {
+        display: block;
+    }
+
+    .mobile-tab-panel {
+        display: none;
+    }
+
+    .mobile-tab-panel.is-active {
+        display: grid;
+        align-items: start;
+        gap: clamp(14px, 2vw, 22px);
+    }
+
+    .mobile-tab-add.is-active {
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    .mobile-tab-records.is-active {
+        grid-template-columns: minmax(280px, 0.78fr) minmax(0, 1.22fr);
+    }
+
+    .mobile-tab-insights.is-active {
+        grid-template-columns: minmax(360px, 0.92fr) minmax(0, 1.08fr);
+    }
+
+    .mobile-tab-add.is-active .form-card,
+    .mobile-tab-records.is-active .filter-card,
+    .mobile-tab-insights.is-active .pie-card {
+        grid-column: 1;
+    }
+
+    .mobile-tab-records.is-active .list-card,
+    .mobile-tab-insights.is-active .trend-card {
+        grid-column: 2;
+    }
+
+    .mobile-tab-add.is-active .form-card {
+        grid-row: auto;
+    }
+}
 .mobile-bottom-nav {
     display: none;
 }
@@ -1546,6 +1628,7 @@ textarea {
 }
 
 @media (max-width: 768px) {
+
     body {
         background: linear-gradient(180deg, #edf6ff 0%, #f7fbff 42%, #eef7f5 100%);
     }
@@ -5008,3 +5091,49 @@ textarea {
         flex-basis: 150px !important;
     }
 }
+/* Desktop-only records polish: taller list, still with internal scrolling. */
+@media (min-width: 769px) {
+    .mobile-tab-records.is-active {
+        align-items: stretch;
+    }
+
+    .mobile-tab-records.is-active .list-card {
+        height: min(58vh, 520px);
+        min-height: 430px;
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .mobile-tab-records.is-active .expense-list {
+        height: 100%;
+        max-height: none;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .period-detail-grid {
+        align-items: stretch;
+    }
+
+    .period-detail-grid .trend-category-panel,
+    .period-detail-grid .daily-detail-panel {
+        height: 320px;
+        min-height: 320px;
+        max-height: 320px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .period-detail-grid .trend-category-grid,
+    .period-detail-grid .daily-expense-list {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+    }
+
+    .period-detail-grid .daily-expense-list {
+        max-height: none;
+    }
+}
+

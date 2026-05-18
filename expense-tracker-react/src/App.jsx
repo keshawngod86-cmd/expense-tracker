@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useState } from "react";
 import "./App.css";
 import ExpenseForm from "./components/ExpenseForm";
 import ExpenseList from "./components/ExpenseList";
@@ -13,7 +13,7 @@ function getDefaultApiBaseUrl() {
     const hostname = window.location.hostname;
 
     if (hostname && hostname !== "localhost" && hostname !== "127.0.0.1") {
-        return `${window.location.protocol}//${hostname}:8001`;
+        return `${window.location.protocol}//${hostname}:8000`;
     }
 
     return "http://127.0.0.1:8000";
@@ -44,7 +44,10 @@ function App() {
     );
     const [currentUser, setCurrentUser] = useState(loadStoredUser);
     const [authMode, setAuthMode] = useState("login");
-    const [activeView, setActiveView] = useState("dashboard");
+    const [activeView, setActiveView] = useState(() => {
+        const storedUser = loadStoredUser();
+        return storedUser?.role === "admin" ? "admin" : "dashboard";
+    });
     const [mobileTab, setMobileTab] = useState("add");
     const [expenses, setExpenses] = useState([]);
     const [editingExpense, setEditingExpense] = useState(null);
@@ -96,7 +99,7 @@ function App() {
         const data = await response.json();
         setAuthToken(data.access_token);
         setCurrentUser(data.user);
-        setActiveView("dashboard");
+        setActiveView(data.user?.role === "admin" ? "admin" : "dashboard");
         setMobileTab("add");
         localStorage.setItem(TOKEN_STORAGE_KEY, data.access_token);
         localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(data.user));
@@ -343,7 +346,24 @@ function App() {
                     currentUser={currentUser}
                 />
             ) : (
-                <main className="container dashboard-layout">
+                <>
+                    <nav className="dashboard-view-tabs" aria-label="Dashboard sections">
+                        {dashboardTabs.map((tab) => (
+                            <button
+                                key={tab.key}
+                                type="button"
+                                className={`dashboard-view-tab ${
+                                    mobileTab === tab.key ? "is-active" : ""
+                                }`}
+                                onClick={() => setMobileTab(tab.key)}
+                                aria-pressed={mobileTab === tab.key}
+                            >
+                                {tab.label}
+                            </button>
+                        ))}
+                    </nav>
+
+                    <main className="container dashboard-layout">
                     <div
                         className={`mobile-tab-panel mobile-tab-add ${
                             mobileTab === "add" ? "is-active" : ""
@@ -458,7 +478,8 @@ function App() {
                             <Trend expenses={filteredExpenses} />
                         </section>
                     </div>
-                </main>
+                    </main>
+                </>
             )}
 
             {activeView === "dashboard" ? (
@@ -487,3 +508,6 @@ function App() {
 }
 
 export default App;
+
+
+
