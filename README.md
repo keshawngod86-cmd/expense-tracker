@@ -1,20 +1,49 @@
-﻿# Bubble Bill Expense Tracker
+# Bubble Bill Expense Tracker
 
-A full-stack expense tracking app built with React, FastAPI, SQLModel, and MySQL.
+Bubble Bill is a full-stack expense tracking web application built with React, FastAPI, SQLModel, and MySQL. The project helps users record daily spending, manage expense records, review spending categories, and inspect spending statistics through a responsive desktop and mobile interface.
 
-The project supports normal users, admin management, expense CRUD, mobile-friendly views, spending share charts, and spending statistics. It is intentionally started with cross-platform commands instead of Windows-only one-click `.bat` scripts, so the same project can be used on macOS and Windows.
+The system supports normal users and admin users. Normal users can manage their own expenses, while admin users can search users, inspect user information, and review each user's added records and activity history.
 
-## Features
+## Main Features
 
-- Register and log in with user roles
-- First registered account becomes admin
+- User registration and login
+- Password hashing with `passlib` and `bcrypt`
+- JWT authentication with `PyJWT`
+- User role support, including normal user and admin user
+- User data isolation, so each user only sees their own expense records
 - Add, edit, delete, search, and filter expenses
-- Mobile dashboard split into Add, Records, and Insights views
-- Spending share with total spending
-- Daily, monthly, and annual spending statistics
-- Admin user list with search
-- Admin activity log for login, register, logout, create, update, delete, and admin actions
-- MySQL persistence for users, expenses, and activity history
+- Expense category support, including Food, Transport, Shopping, Bills, Entertainment, and Other
+- Spending Share chart with total spending
+- Spending Statistics with daily, monthly, and annual views
+- Desktop dashboard with Add, Records, and Insights sections
+- Mobile dashboard with bottom navigation buttons
+- Admin user management page with user search
+- Admin user detail panel showing user profile, added expense records, and user activity history
+- MySQL persistence for users, expenses, and activity logs
+
+## Technology Stack
+
+Frontend:
+
+- React
+- Vite
+- JavaScript
+- CSS
+- Chart.js
+- react-chartjs-2
+
+Backend:
+
+- FastAPI
+- Python
+- SQLModel
+- PyMySQL
+- passlib with bcrypt
+- PyJWT
+
+Database:
+
+- MySQL
 
 ## Project Structure
 
@@ -26,6 +55,7 @@ expense-tracker/
 |   |-- main.py
 |   |-- models.py
 |   |-- requirements.txt
+|   |-- seed_user_expenses.py
 |   `-- setup_database.sql
 |-- expense-tracker-react/
 |   |-- public/
@@ -37,6 +67,8 @@ expense-tracker/
 
 ## Required Software
 
+Install these before running the project on a new computer:
+
 - Python 3.10 or newer
 - Node.js 18 or newer
 - MySQL Server
@@ -44,105 +76,138 @@ expense-tracker/
 
 ## Database Setup
 
-Create the database and tables from MySQL Workbench or the MySQL command line:
+Open MySQL Workbench and run the SQL file below:
 
-```sql
-SOURCE expense-tracker-backend/setup_database.sql;
+```text
+expense-tracker-backend/setup_database.sql
 ```
 
-If `SOURCE` is not available in your client, open `expense-tracker-backend/setup_database.sql` and run the SQL manually.
+This file creates the `expense_tracker` database and the required tables.
 
-The backend also runs a small startup migration, so existing databases get the newer admin/user tracking columns automatically.
+If you want to run it manually, open the SQL file in MySQL Workbench and click the lightning button. After running it, refresh the schema list and check that `expense_tracker` exists.
 
-## Backend Setup
+## Backend Setup on Windows
 
-Run these commands from the project root:
+Open PowerShell in the project folder and run:
+
+```powershell
+cd expense-tracker-backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+$env:MYSQL_USER="root"
+$env:MYSQL_PASSWORD="your_mysql_password"
+$env:MYSQL_DATABASE="expense_tracker"
+$env:JWT_SECRET_KEY="bubble-bill-demo-secret"
+.\.venv\Scripts\python.exe -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+If your MySQL password is already the default password in `db.py`, you can still set `MYSQL_PASSWORD` explicitly. This is safer on a new computer.
+
+The backend runs at:
+
+```text
+http://localhost:8000
+```
+
+FastAPI documentation is available at:
+
+```text
+http://localhost:8000/docs
+```
+
+## Backend Setup on macOS
+
+Open Terminal in the project folder and run:
 
 ```bash
 cd expense-tracker-backend
-python -m venv .venv
-```
-
-Activate the virtual environment on macOS or Linux:
-
-```bash
-source .venv/bin/activate
-```
-
-Activate the virtual environment on Windows PowerShell:
-
-```powershell
-.venv\Scripts\Activate.ps1
-```
-
-Install and start the backend:
-
-```bash
-python -m pip install -r requirements.txt
-python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+python3 -m venv .venv
+./.venv/bin/python -m pip install -r requirements.txt
+export MYSQL_USER="root"
+export MYSQL_PASSWORD="your_mysql_password"
+export MYSQL_DATABASE="expense_tracker"
+export JWT_SECRET_KEY="bubble-bill-demo-secret"
+./.venv/bin/python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The backend runs at:
 
 ```text
-http://127.0.0.1:8000
+http://localhost:8000
 ```
 
 ## Frontend Setup
 
-Open a second terminal from the project root:
+Open a second terminal from the project folder and run:
 
 ```bash
 cd expense-tracker-react
 npm install
-npm run dev -- --host 0.0.0.0
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-The frontend usually runs at:
+The frontend normally runs at:
 
 ```text
 http://localhost:5173
 ```
 
-If Vite chooses another port, use the URL shown in the terminal.
+If Vite shows another port, use the address shown in the terminal.
 
-## MySQL Connection Settings
+## Mobile Testing
 
-The backend reads MySQL settings from environment variables. If no environment variables are set, it uses the defaults in `expense-tracker-backend/db.py`.
+To test on a phone, make sure the computer and phone are connected to the same Wi-Fi network.
 
-Supported variables:
-
-```text
-DATABASE_URL
-MYSQL_HOST
-MYSQL_PORT
-MYSQL_USER
-MYSQL_PASSWORD
-MYSQL_DATABASE
-JWT_SECRET_KEY
-```
-
-Example macOS/Linux:
+Run the frontend with:
 
 ```bash
-export MYSQL_USER=root
-export MYSQL_PASSWORD=your_password
-export MYSQL_DATABASE=expense_tracker
-export JWT_SECRET_KEY=replace_with_your_local_secret
+npm run dev -- --host 0.0.0.0 --port 5173
 ```
 
-Example Windows PowerShell:
+Then open the Network address shown by Vite on the phone, for example:
 
-```powershell
-$env:MYSQL_USER="root"
-$env:MYSQL_PASSWORD="your_password"
-$env:MYSQL_DATABASE="expense_tracker"
-$env:JWT_SECRET_KEY="replace_with_your_local_secret"
+```text
+http://192.168.1.107:5173
 ```
+
+If the phone can open the frontend but cannot register or log in, check that the backend is also running on port `8000` and that the computer firewall allows local network access.
+
+## How to Use the App
+
+1. Open the frontend page.
+2. Register a new account or log in with an existing account.
+3. The first registered account becomes an admin account automatically.
+4. Use the Dashboard page to manage expenses.
+5. In the Add section, create a new expense record.
+6. In the Records section, search, filter, edit, or delete expense records.
+7. In the Insights section, view spending share and spending statistics.
+8. If the logged-in user is an admin, the app opens the Admin page first.
+9. In the Admin page, search users and click a user card to view user information, added expenses, and activity records.
+
+## Security Design
+
+Password security:
+
+- The system never stores plain text passwords.
+- Passwords are hashed with `passlib` and `bcrypt` before being saved to MySQL.
+- The database stores the hashed value in the `password_hash` column.
+
+JWT authentication:
+
+- The backend uses `PyJWT` to generate login tokens.
+- A token is generated after successful login or registration.
+- The token includes user information such as username, user id, role, and expiry time.
+- Protected API requests use the `Authorization: Bearer <token>` header.
+- Invalid or expired tokens are rejected by the backend.
+
+Admin data protection:
+
+- The admin API does not return raw passwords.
+- The admin page only displays safe user information such as username, email, role, records, and activity history.
 
 ## Admin Data in MySQL
 
-Admin page data is stored in these MySQL tables:
+Useful SQL queries for checking admin data:
 
 ```sql
 SELECT id, username, email, role, created_at
@@ -157,30 +222,47 @@ FROM useractivity
 ORDER BY id DESC;
 ```
 
-Passwords are stored only as bcrypt hashes in `password_hash` using `passlib`. Login uses `PyJWT` tokens with an expiry time. The admin API and admin UI do not return raw passwords.
+## Test Data
 
-## Reset and Seed User Expenses
-
-After activating the backend virtual environment, you can regenerate personal test data:
+After the backend virtual environment is ready, you can generate sample expense data:
 
 ```bash
+cd expense-tracker-backend
 python seed_user_expenses.py
 ```
 
-This deletes all rows in `expense`, removes old expense activity logs, and inserts 100 random expenses for every user in the `user` table.
+This script deletes existing expense rows, removes old expense activity logs, and inserts 100 random expense records for every user in the `user` table.
 
-## Notes for Group Members
+## Common Problems
 
-- There are no Windows-only one-click startup scripts in this version.
-- Start the backend and frontend in two terminals.
-- Keep `node_modules/` and `.venv/` local; rebuild them with the commands above.
-- If testing from a phone, both the phone and computer must be on the same network. Use the computer LAN IP instead of `localhost`.
+If the frontend opens but register or login does not work:
 
-## API Docs
+- Make sure the backend is running at `http://localhost:8000`.
+- Make sure MySQL is running.
+- Make sure the MySQL password is correct.
+- Run `python -m pip install -r requirements.txt` again inside the backend environment.
 
-After the backend starts, FastAPI docs are available at:
+If MySQL connection fails:
 
-```text
-http://127.0.0.1:8000/docs
-```
+- Check `MYSQL_USER`, `MYSQL_PASSWORD`, and `MYSQL_DATABASE`.
+- Check that the `expense_tracker` database exists.
+- Check that MySQL Server is running.
 
+If password hashing fails:
+
+- Make sure `bcrypt==4.0.1` is installed from `requirements.txt`.
+- Run the dependency installation command again.
+
+## Group Contributions
+
+### Xiaotong Jiang / Keshawn
+
+Xiaotong Jiang mainly worked on frontend optimisation, mobile interface improvement, documentation, and security fixes. He updated the responsive layout, added the logo and mobile buttons, organised the README, fixed image link issues, and handled key policy and password encryption updates.
+
+### Yi Zhong
+
+Yi Zhong mainly contributed to feature iteration and consumption classification. She worked on the register/login flow and helped develop the consumption classification summary to make user spending easier to understand.
+
+### Zhe Cheng
+
+Zhe Cheng mainly worked on backend/admin features and data visualisation. He created and improved the admin interface, implemented user data isolation and admin records, and developed the bill statistics chart with multi-time dimension switching and data loading/refresh logic during development.
